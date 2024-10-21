@@ -16,4 +16,3 @@ jobs:
         run: yarn
       - name: Lint
         run: yarn build:prod
-
