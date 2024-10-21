@@ -5,12 +5,15 @@
   "main": "./build/index.js",
   "repository": "https://github.com/BeachFi/sdk.git",
   "scripts": {
-    "build": "tsc",
+    "build:tsc": "tsc",
+    "build:dev": "tsc",
+    "build:prod": "npm-run-all --serial build:tsc obfuscate",
+    "obfuscate": "npx ts-node ./ob.ts",
     "tsc:check": "tsc --noEmit",
     "eslint:check": "eslint --config eslint.config.mjs **/*.ts",
     "prettier:check": "prettier --check ./**/*.{json,md,yaml,ts}",
     "lint": "npm-run-all --parallel tsc:check eslint:check prettier:check",
-    "fix": "prettier --write ./**/*.{json,md,yaml,ts} && eslint --fix"
+    "fix": "prettier --write ./**/*.{json,md,yaml,ts} && eslint --config eslint.config.mjs --fix --ignore-pattern \"build\""
   },
   "author": "9oelM <hj923@hotmail.com>",
   "license": "None",
@@ -24,6 +27,7 @@
     "@eslint/js": "^9.13.0",
     "eslint": "^9.13.0",
     "globals": "^15.11.0",
+    "javascript-obfuscator": "^4.1.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
