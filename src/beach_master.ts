@@ -1,0 +1,145 @@
+import { Address, Cell, Contract, ContractProvider } from "@ton/core";
+import {
+  BeachReserveStorage,
+  isTONBool,
+  ReserveVars0,
+  ReserveVars1,
+  ReserveVars2,
+  ReserveVars3,
+} from "./types";
+
+export class BeachMaster implements Contract {
+  constructor(
+    readonly address: Address,
+    readonly init?: { code: Cell; data: Cell },
+  ) {}
+
+  static createFromAddress(address: Address) {
+    return new BeachMaster(address);
+  }
+
+  static unpackReserve(cell: Cell): BeachReserveStorage {
+    const slice = cell.beginParse();
+    const reserve_vars_0 = slice.loadRef();
+    const reserve_vars_1 = slice.loadRef();
+    const reserve_vars_2 = slice.loadRef();
+    const reserve_vars_3 = slice.loadRef();
+    slice.endParse();
+
+    return {
+      reserve_vars_0,
+      reserve_vars_1,
+      reserve_vars_2,
+      reserve_vars_3,
+    };
+  }
+
+  static fullyUnpackReserve(beachReserveStorage: BeachReserveStorage) {
+    const reserve_vars_0 = BeachMaster.unpackReserveVars0(
+      beachReserveStorage.reserve_vars_0,
+    );
+    const reserve_vars_1 = BeachMaster.unpackReserveVars1(
+      beachReserveStorage.reserve_vars_1,
+    );
+    const reserve_vars_2 = BeachMaster.unpackReserveVars2(
+      beachReserveStorage.reserve_vars_2,
+    );
+    const reserve_vars_3 = BeachMaster.unpackReserveVars3(
+      beachReserveStorage.reserve_vars_3,
+    );
+
+    return {
+      reserve_vars_0,
+      reserve_vars_1,
+      reserve_vars_2,
+      reserve_vars_3,
+    };
+  }
+
+  static unpackReserveVars0(cell: Cell): ReserveVars0 {
+    const slice = cell.beginParse();
+    const enabled = slice.loadIntBig(2);
+    const decimals = slice.loadUintBig(8);
+    const borrow_factor_pct = slice.loadUintBig(8);
+    const collateral_factor_pct = slice.loadUintBig(8);
+    const reserve_factor_pct = slice.loadUintBig(8);
+    const liquidation_bonus_pct = slice.loadUintBig(8);
+    const debt_limit = slice.loadUintBig(256);
+    const jetton_wallet_code = slice.loadRef();
+    slice.endParse();
+
+    if (!isTONBool(enabled)) {
+      throw new Error(`Invalid boolean value: ${enabled}`);
+    }
+
+    return {
+      enabled: enabled,
+      decimals: decimals,
+      borrow_factor_pct,
+      collateral_factor_pct,
+      reserve_factor_pct,
+      liquidation_bonus_pct,
+      debt_limit: debt_limit,
+      jetton_wallet_code,
+    };
+  }
+
+  static unpackReserveVars1(cell: Cell): ReserveVars1 {
+    const slice = cell.beginParse();
+    const last_update_timestamp = slice.loadUintBig(64);
+    const lending_accumulator = slice.loadUintBig(100);
+    const debt_accumulator = slice.loadUintBig(100);
+    const current_lending_rate = slice.loadUintBig(128);
+    const current_borrowing_rate = slice.loadUintBig(128);
+    const total_raw_amount_to_treasury = slice.loadUintBig(256);
+    slice.endParse();
+
+    return {
+      last_update_timestamp,
+      lending_accumulator,
+      debt_accumulator,
+      current_lending_rate,
+      current_borrowing_rate,
+      total_raw_amount_to_treasury,
+    };
+  }
+
+  static unpackReserveVars2(cell: Cell): ReserveVars2 {
+    const slice = cell.beginParse();
+    const total_raw_available = slice.loadUintBig(256);
+    const total_raw_debt = slice.loadUintBig(256);
+    slice.endParse();
+
+    return {
+      total_raw_available,
+      total_raw_debt,
+    };
+  }
+
+  static unpackReserveVars3(cell: Cell): ReserveVars3 {
+    const slice = cell.beginParse();
+    const slope0_pct = slice.loadUintBig(8);
+    const slope1_pct = slice.loadUintBig(8);
+    const y_intercept = slice.loadUintBig(8);
+    const optimal_rate_pct = slice.loadUintBig(8);
+    slice.endParse();
+
+    return {
+      slope0_pct,
+      slope1_pct,
+      y_intercept,
+      optimal_rate_pct,
+    };
+  }
+
+  async getReserve(provider: ContractProvider, reserve_id_6: bigint) {
+    const res = await provider.get("fetch_reserve", [
+      {
+        type: `int`,
+        value: reserve_id_6,
+      },
+    ]);
+    const reserve_storage = res.stack.readCell();
+    return reserve_storage;
+  }
+}

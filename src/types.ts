@@ -7,6 +7,12 @@ export const TONBool = Object.freeze({
 
 export type TONBool = typeof TONBool.TRUE | typeof TONBool.FALSE;
 
+export function isTONBool(
+  value: bigint,
+): value is typeof TONBool.TRUE | typeof TONBool.FALSE {
+  return value === TONBool.TRUE || value === TONBool.FALSE;
+}
+
 export type ReserveVars0 = {
   enabled: TONBool;
   decimals: bigint;

@@ -5,3 +5,4 @@ export * from "./dirm";
 export * from "./math";
 export * from "./types";
 export * from "./utils";
+export * from "./beach_master";
