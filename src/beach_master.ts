@@ -1,4 +1,12 @@
-import { Address, Cell, Contract, ContractProvider } from "@ton/core";
+import {
+  Address,
+  beginCell,
+  Cell,
+  Contract,
+  ContractProvider,
+  Sender,
+  SendMode,
+} from "@ton/core";
 import {
   BeachReserveStorage,
   isTONBool,
@@ -6,7 +14,13 @@ import {
   ReserveVars1,
   ReserveVars2,
   ReserveVars3,
+  SendBorrowArgs,
+  SendDepositArgs,
+  SendRepayArgs,
+  SendWithdrawArgs,
 } from "./types";
+import { jettonTransferMessage } from "./jetton";
+import { Opcode } from "./constants";
 
 export class BeachMaster implements Contract {
   constructor(
@@ -141,5 +155,119 @@ export class BeachMaster implements Contract {
     ]);
     const reserve_storage = res.stack.readCell();
     return reserve_storage;
+  }
+
+  async getVersion(provider: ContractProvider) {
+    const res = await provider.get("fetch_version", []);
+    const version = res.stack.readBigNumber();
+    return version;
+  }
+
+  async getLatestLendingAccumulator(
+    provider: ContractProvider,
+    reserve_id_6: bigint,
+  ) {
+    const res = await provider.get("fetch_latest_lending_accumulator", [
+      {
+        type: `int`,
+        value: reserve_id_6,
+      },
+    ]);
+    const version = res.stack.readBigNumber();
+    return version;
+  }
+
+  async getLatestDebtAccumulator(
+    provider: ContractProvider,
+    reserve_id_6: bigint,
+  ) {
+    const res = await provider.get("fetch_latest_debt_accumulator", [
+      {
+        type: `int`,
+        value: reserve_id_6,
+      },
+    ]);
+    const version = res.stack.readBigNumber();
+    return version;
+  }
+
+  static createSendDepositBody(args: SendDepositArgs) {
+    const forwardPayload = beginCell()
+      .storeUint(0b000, 3) // Deposit constructor prefix
+      .storeUint(args.reserve_id_6, 6)
+      .endCell();
+
+    return jettonTransferMessage(
+      args.jetton_amount,
+      args.to,
+      args.response_address,
+      args.custom_payload,
+      args.forward_ton_amount,
+      forwardPayload,
+    );
+  }
+
+  static createSendRepayBody(args: SendRepayArgs) {
+    const forwardPayload = beginCell()
+      .storeUint(0b001, 3) // Repay constructor prefix
+      .storeUint(args.reserve_id_6, 6)
+      .endCell();
+
+    return jettonTransferMessage(
+      args.jetton_amount,
+      args.to,
+      args.response_address,
+      args.custom_payload,
+      args.forward_ton_amount,
+      forwardPayload,
+    );
+  }
+
+  static createSendWithdrawBody(args: SendWithdrawArgs) {
+    return beginCell()
+      .storeUint(Opcode.WITHDRAW_FROM_WALLET_TO_BEACH_MASTER, 32)
+      .storeCoins(args.face_amount)
+      .storeUint(args.reserve_id_6, 6)
+      .storeRef(args.redstoneData)
+      .storeRef(args.configPayload)
+      .storeRef(beginCell().storeRef(args.configSignature).endCell())
+      .endCell();
+  }
+
+  async sendWithdraw(
+    provider: ContractProvider,
+    via: Sender,
+    value: bigint,
+    args: SendWithdrawArgs,
+  ) {
+    await provider.internal(via, {
+      value,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+      body: BeachMaster.createSendWithdrawBody(args),
+    });
+  }
+
+  static createSendBorrowBody(args: SendBorrowArgs) {
+    return beginCell()
+      .storeUint(Opcode.BORROW_FROM_WALLET_TO_BEACH_MASETER, 32)
+      .storeCoins(args.face_amount)
+      .storeUint(args.reserve_id_6, 6)
+      .storeRef(args.redstoneData)
+      .storeRef(args.configPayload)
+      .storeRef(beginCell().storeRef(args.configSignature).endCell())
+      .endCell();
+  }
+
+  async sendBorrow(
+    provider: ContractProvider,
+    via: Sender,
+    value: bigint,
+    args: SendWithdrawArgs,
+  ) {
+    await provider.internal(via, {
+      value,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+      body: BeachMaster.createSendBorrowBody(args),
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { Cell } from "@ton/core";
+import { Address, Cell } from "@ton/core";
 
 export const TONBool = Object.freeze({
   TRUE: -1n,
@@ -53,4 +53,38 @@ export type BeachReserveStorage = {
   reserve_vars_1: Cell;
   reserve_vars_2: Cell;
   reserve_vars_3: Cell;
+};
+
+export type SendDepositArgs = {
+  reserve_id_6: bigint;
+  jetton_amount: bigint;
+  to: Address;
+  response_address: Address;
+  custom_payload: Cell | null;
+  forward_ton_amount: bigint;
+};
+
+export type SendWithdrawArgs = {
+  face_amount: bigint;
+  reserve_id_6: bigint;
+  configPayload: Cell;
+  configSignature: Cell;
+  redstoneData: Cell;
+};
+
+export type SendBorrowArgs = {
+  face_amount: bigint;
+  reserve_id_6: bigint;
+  configPayload: Cell;
+  configSignature: Cell;
+  redstoneData: Cell;
+};
+
+export type SendRepayArgs = {
+  reserve_id_6: bigint;
+  jetton_amount: bigint;
+  to: Address;
+  response_address: Address;
+  custom_payload: Cell | null;
+  forward_ton_amount: bigint;
 };
