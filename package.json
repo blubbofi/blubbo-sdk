@@ -29,6 +29,7 @@
     "@ton/core": "^0.59.0",
     "@ton/crypto": "^3.3.0",
     "@ton/ton": "^15.1.0",
+    "bignumber.js": "^9.1.2",
     "ethers": "5.7.2"
   },
   "devDependencies": {
