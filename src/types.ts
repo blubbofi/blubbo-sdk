@@ -16,7 +16,7 @@ export function isTONBool(
 
 export const TonBoolToBoolean = (value: TONBool) => value === TONBool.TRUE;
 
-export type ReserveId = 0n | 1n;
+export type ReserveId = 0 | 1;
 
 export type ReserveVars0 = {
   enabled: TONBool;
