@@ -18,7 +18,7 @@
     "eslint:check": "eslint --config eslint.config.mjs **/*.ts",
     "prettier:check": "prettier --check ./**/*.{json,md,yaml,ts}",
     "lint": "npm-run-all --parallel tsc:check eslint:check prettier:check",
-    "fix": "prettier --write ./src/**/*.ts && prettier --write ./**/*.{json,md,yaml} && eslint --config eslint.config.mjs --fix --ignore-pattern \"build\"",
+    "fix": "prettier --write {./**/*.ts,./**/**/*.ts} && prettier --write ./**/*.{json,md,yaml} && eslint --config eslint.config.mjs --fix --ignore-pattern \"build\"",
     "test": "jest"
   },
   "author": "9oelM <hj923@hotmail.com>",

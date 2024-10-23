@@ -1,5 +1,4 @@
-import { Address } from "@ton/core";
-import { BeachMaster } from "../src/index";
+import { ConstantsByDeployment, ContractInteraction } from "../src/index";
 import { TonClient } from "@ton/ton";
 
 describe("Smoke tests", () => {
@@ -7,14 +6,21 @@ describe("Smoke tests", () => {
     const client = new TonClient({
       endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
     });
-    const beachMaster = BeachMaster.createFromAddress(
-      Address.parseRaw(
-        "0:2f26bab1011a5ece744b210240c651611815216b7eec32c3442968c5e9d186b5",
-      ),
-    );
-    const beachMasterContract = client.open(beachMaster);
+    const contractInteraction = new ContractInteraction({
+      client,
+      addressBook: {
+        beachMaster:
+          ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook
+            .BEACH_MASTER,
+        sotw: ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook.SOTW,
+      },
+      constantsByDeployment: ConstantsByDeployment.testnet_2024_10_22_847a54a,
+    });
     try {
-      await beachMasterContract.getReserve(0n);
+      await contractInteraction.beachMaster.getReserve(
+        ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.normal
+          .TONCOIN,
+      );
     } catch (e) {
       fail(e);
     }

@@ -1,4 +1,4 @@
-import { Address, ContractProvider, Sender } from "@ton/core";
+import { Address, OpenedContract, Sender } from "@ton/core";
 import { BeachMaster } from "./beach_master";
 import { Sotw } from "./sotw";
 import {
@@ -10,24 +10,27 @@ import {
   SendRepayToSotwArgs,
 } from "./types";
 import { ConstantsByDeployment } from "./constants";
+import { TonClient } from "@ton/ton";
 
 export class ContractInteraction {
-  beachMaster: BeachMaster;
-  sotw: Sotw;
-  provider: ContractProvider;
+  beachMaster: OpenedContract<BeachMaster>;
+  sotw: OpenedContract<Sotw>;
+  client: TonClient;
   constantsByDeployment: ConstantsByDeployment;
 
   constructor(args: {
-    provider: ContractProvider;
+    client: TonClient;
     addressBook: {
       beachMaster: Address;
       sotw: Address;
     };
     constantsByDeployment: ConstantsByDeployment;
   }) {
-    this.provider = args.provider;
-    this.beachMaster = new BeachMaster(args.addressBook.beachMaster);
-    this.sotw = new Sotw(args.addressBook.sotw);
+    this.client = args.client;
+    this.beachMaster = this.client.open(
+      new BeachMaster(args.addressBook.beachMaster),
+    );
+    this.sotw = this.client.open(new Sotw(args.addressBook.sotw));
     this.constantsByDeployment = args.constantsByDeployment;
   }
 
@@ -40,7 +43,7 @@ export class ContractInteraction {
         response_address,
         reserve_id_6,
       }: SendDepositToSotwArgs = args;
-      return this.sotw.sendDeposit(this.provider, sender, {
+      return this.sotw.sendDeposit(sender, {
         jetton_amount,
         response_address,
         reserve_id_6,
@@ -48,7 +51,7 @@ export class ContractInteraction {
       });
     }
 
-    return this.beachMaster.sendDeposit(this.provider, sender, {
+    return this.beachMaster.sendDeposit(sender, {
       ...args,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
@@ -61,7 +64,7 @@ export class ContractInteraction {
         ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN
         : this.constantsByDeployment.Fee.WITHDRAW.OTHER;
 
-    return this.beachMaster.sendWithdraw(this.provider, sender, {
+    return this.beachMaster.sendWithdraw(sender, {
       ...args,
       gas,
       configPayload: this.constantsByDeployment.Config.PAYLOAD,
@@ -75,7 +78,7 @@ export class ContractInteraction {
         ? this.constantsByDeployment.Fee.BORROW.TONCOIN
         : this.constantsByDeployment.Fee.BORROW.OTHER;
 
-    return this.beachMaster.sendBorrow(this.provider, sender, {
+    return this.beachMaster.sendBorrow(sender, {
       ...args,
       gas,
       configPayload: this.constantsByDeployment.Config.PAYLOAD,
@@ -92,7 +95,7 @@ export class ContractInteraction {
         response_address,
         reserve_id_6,
       }: SendRepayToSotwArgs = args;
-      return this.sotw.sendRepay(this.provider, sender, {
+      return this.sotw.sendRepay(sender, {
         jetton_amount,
         response_address,
         reserve_id_6,
@@ -100,7 +103,7 @@ export class ContractInteraction {
       });
     }
 
-    return this.beachMaster.sendRepay(this.provider, sender, {
+    return this.beachMaster.sendRepay(sender, {
       ...args,
       gas: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
