@@ -7,6 +7,8 @@ export const TONBool = Object.freeze({
 
 export type TONBool = typeof TONBool.TRUE | typeof TONBool.FALSE;
 
+export type ReserveId = 0n | 1n;
+
 export function isTONBool(
   value: bigint,
 ): value is typeof TONBool.TRUE | typeof TONBool.FALSE {
@@ -56,17 +58,26 @@ export type BeachReserveStorage = {
 };
 
 export type SendDepositArgs = {
-  reserve_id_6: bigint;
+  reserve_id_6: ReserveId;
   jetton_amount: bigint;
   to: Address;
   response_address: Address;
-  custom_payload: Cell | null;
   forward_ton_amount: bigint;
 };
 
+export type SendDepositToSotwArgs = Pick<
+  SendDepositArgs,
+  "jetton_amount" | "reserve_id_6" | "response_address"
+>;
+
+export type ContractInteractionDepositArgs = Omit<
+  SendDepositArgs,
+  "forward_ton_amount"
+>;
+
 export type SendWithdrawArgs = {
   face_amount: bigint;
-  reserve_id_6: bigint;
+  reserve_id_6: ReserveId;
   configPayload: Cell;
   configSignature: Cell;
   redstoneData: Cell;
@@ -74,17 +85,30 @@ export type SendWithdrawArgs = {
 
 export type SendBorrowArgs = {
   face_amount: bigint;
-  reserve_id_6: bigint;
+  reserve_id_6: ReserveId;
   configPayload: Cell;
   configSignature: Cell;
   redstoneData: Cell;
 };
 
 export type SendRepayArgs = {
-  reserve_id_6: bigint;
+  reserve_id_6: ReserveId;
   jetton_amount: bigint;
   to: Address;
   response_address: Address;
-  custom_payload: Cell | null;
   forward_ton_amount: bigint;
 };
+
+export type SendRepayToSotwArgs = Pick<
+  SendRepayArgs,
+  "jetton_amount" | "reserve_id_6" | "response_address"
+>;
+
+export type ContractInteractionRepayArgs = Omit<
+  SendRepayArgs,
+  "forward_ton_amount"
+>;
+
+export type WithGas<T> = {
+  gas: bigint;
+} & T;

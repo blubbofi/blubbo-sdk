@@ -18,6 +18,7 @@ import {
   SendDepositArgs,
   SendRepayArgs,
   SendWithdrawArgs,
+  WithGas,
 } from "./types";
 import { jettonTransferMessage } from "./jetton";
 import { Opcode } from "./constants";
@@ -201,10 +202,22 @@ export class BeachMaster implements Contract {
       args.jetton_amount,
       args.to,
       args.response_address,
-      args.custom_payload,
+      null,
       args.forward_ton_amount,
       forwardPayload,
     );
+  }
+
+  async sendDeposit(
+    provider: ContractProvider,
+    via: Sender,
+    args: WithGas<SendDepositArgs>,
+  ) {
+    return provider.internal(via, {
+      value: args.gas,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+      body: BeachMaster.createSendDepositBody(args),
+    });
   }
 
   static createSendRepayBody(args: SendRepayArgs) {
@@ -217,10 +230,22 @@ export class BeachMaster implements Contract {
       args.jetton_amount,
       args.to,
       args.response_address,
-      args.custom_payload,
+      null,
       args.forward_ton_amount,
       forwardPayload,
     );
+  }
+
+  async sendRepay(
+    provider: ContractProvider,
+    via: Sender,
+    args: WithGas<SendRepayArgs>,
+  ) {
+    return provider.internal(via, {
+      value: args.gas,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+      body: BeachMaster.createSendRepayBody(args),
+    });
   }
 
   static createSendWithdrawBody(args: SendWithdrawArgs) {
@@ -237,11 +262,10 @@ export class BeachMaster implements Contract {
   async sendWithdraw(
     provider: ContractProvider,
     via: Sender,
-    value: bigint,
-    args: SendWithdrawArgs,
+    args: WithGas<SendWithdrawArgs>,
   ) {
     await provider.internal(via, {
-      value,
+      value: args.gas,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
       body: BeachMaster.createSendWithdrawBody(args),
     });
@@ -261,11 +285,10 @@ export class BeachMaster implements Contract {
   async sendBorrow(
     provider: ContractProvider,
     via: Sender,
-    value: bigint,
-    args: SendWithdrawArgs,
+    args: WithGas<SendWithdrawArgs>,
   ) {
     await provider.internal(via, {
-      value,
+      value: args.gas,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
       body: BeachMaster.createSendBorrowBody(args),
     });
