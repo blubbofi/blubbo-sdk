@@ -1,4 +1,5 @@
 import { Address, toNano } from "@ton/core";
+import { buildCellFromBocHex } from "./utils";
 
 export const Lock = Object.freeze({
   UNLOCKED: 1n,
@@ -64,11 +65,23 @@ class Fee {
   });
 }
 
+class Config {
+  public static testnet_2024_10_22_847a54a = Object.freeze({
+    PAYLOAD: buildCellFromBocHex({
+      bocHex: `b5ee9c724101090100de0002013801030118000002010000000055534454020112010000000000544f4e08014a00000502000000000000000000000000009c5ae89c4af6aa32ce58588dbaf90d18a855b6de0401440200000000000000000000000000dd682daec5a90dd295d14da4b0bec9281017b5be050144020000000000000000000000000051ce04be4b3e32572c4ec9135221d0691ba7d2020601440200000000000000000000000000deb22f54738d54976c4c0fe5ce6d408e40d8849907014402000000000000000000000000008bb8f32df04c8b654987daaed53d6b6091e3b774080000de146516`,
+    }),
+    SIGNATURE: buildCellFromBocHex({
+      bocHex: `b5ee9c72410101010042000080b36f07b0ce06bdc33ee4ec8a836ba72cf85c160f7a007efcbe2c72034ce5e9f8beaaa56325734944fa954b2888b5ca477f910638ee1d770fefa7d12d4f4e79065d3c1570`,
+    }),
+  });
+}
+
 export const ConstantsByDeployment = {
   testnet_2024_10_22_847a54a: {
     AddressBook: AddressBook.testnet_2024_10_22_847a54a,
     Reserves: Reserves.testnet_2024_10_22_847a54a,
     Fee: Fee.testnet_2024_10_22_847a54a,
+    Config: Config.testnet_2024_10_22_847a54a,
   },
 };
 

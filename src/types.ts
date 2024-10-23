@@ -1,4 +1,5 @@
-import { Address, Cell } from "@ton/core";
+import { Address, Cell, Dictionary } from "@ton/core";
+import { Maybe } from "@ton/core/dist/utils/maybe";
 
 export const TONBool = Object.freeze({
   TRUE: -1n,
@@ -83,6 +84,11 @@ export type SendWithdrawArgs = {
   redstoneData: Cell;
 };
 
+export type ContractInteractionWithdrawArgs = Omit<
+  SendWithdrawArgs,
+  "configPayload" | "configSignature"
+>;
+
 export type SendBorrowArgs = {
   face_amount: bigint;
   reserve_id_6: ReserveId;
@@ -90,6 +96,11 @@ export type SendBorrowArgs = {
   configSignature: Cell;
   redstoneData: Cell;
 };
+
+export type ContractInteractionBorrowArgs = Omit<
+  SendBorrowArgs,
+  "configPayload" | "configSignature"
+>;
 
 export type SendRepayArgs = {
   reserve_id_6: ReserveId;
@@ -112,3 +123,30 @@ export type ContractInteractionRepayArgs = Omit<
 export type WithGas<T> = {
   gas: bigint;
 } & T;
+
+export type BeachUserVars0 = {
+  owner_address: Address;
+  beach_master_address: Address;
+  // Null means empty dictionary
+  raw_deposit_per_jetton_dict: null | Dictionary<bigint, Cell>;
+  // Null means empty dictionary
+  raw_debt_per_jetton_dict: null | Dictionary<bigint, Cell>;
+  beach_user_code: Cell;
+  // Unused for now (always set as null)
+  additionalData: Maybe<Cell>;
+};
+
+export type BeachUserVars1 = {
+  tx_locks: Cell;
+};
+
+export type TxLocks = {
+  withdrawal_lock_id: bigint;
+  withdrawal_lock: bigint;
+  borrowing_lock_id: bigint;
+  borrowing_lock: bigint;
+  repayment_lock_id: bigint;
+  repayment_lock: bigint;
+  liquidation_lock_id: bigint;
+  liquidation_lock: bigint;
+};
