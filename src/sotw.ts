@@ -8,7 +8,7 @@ import {
   SendMode,
 } from "@ton/core";
 import { SendDepositToSotwArgs, SendRepayToSotwArgs, WithGas } from "./types";
-import { jettonTransferMessage } from "./jetton";
+import { JettonWallet } from "./jetton/jetton_wallet";
 
 export class Sotw implements Contract {
   constructor(
@@ -26,7 +26,7 @@ export class Sotw implements Contract {
       .storeUint(args.reserve_id_6, 6)
       .endCell();
 
-    return jettonTransferMessage(
+    return JettonWallet.transferMessage(
       args.jetton_amount, // jetton_amount
       // Just addr_none to comply with the transfer message format
       Address.parse(
@@ -45,7 +45,7 @@ export class Sotw implements Contract {
       .storeUint(args.reserve_id_6, 6)
       .endCell();
 
-    return jettonTransferMessage(
+    return JettonWallet.transferMessage(
       args.jetton_amount, // jetton_amount
       // Just addr_none to comply with the transfer message format
       Address.parse(

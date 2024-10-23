@@ -20,8 +20,8 @@ import {
   SendWithdrawArgs,
   WithGas,
 } from "./types";
-import { jettonTransferMessage } from "./jetton";
 import { Opcode } from "./constants";
+import { JettonWallet } from "./jetton/jetton_wallet";
 
 export class BeachMaster implements Contract {
   constructor(
@@ -198,7 +198,7 @@ export class BeachMaster implements Contract {
       .storeUint(args.reserve_id_6, 6)
       .endCell();
 
-    return jettonTransferMessage(
+    return JettonWallet.transferMessage(
       args.jetton_amount,
       args.to,
       args.response_address,
@@ -226,7 +226,7 @@ export class BeachMaster implements Contract {
       .storeUint(args.reserve_id_6, 6)
       .endCell();
 
-    return jettonTransferMessage(
+    return JettonWallet.transferMessage(
       args.jetton_amount,
       args.to,
       args.response_address,
