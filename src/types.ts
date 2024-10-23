@@ -8,13 +8,15 @@ export const TONBool = Object.freeze({
 
 export type TONBool = typeof TONBool.TRUE | typeof TONBool.FALSE;
 
-export type ReserveId = 0n | 1n;
-
 export function isTONBool(
   value: bigint,
 ): value is typeof TONBool.TRUE | typeof TONBool.FALSE {
   return value === TONBool.TRUE || value === TONBool.FALSE;
 }
+
+export const TonBoolToBoolean = (value: TONBool) => value === TONBool.TRUE;
+
+export type ReserveId = 0n | 1n;
 
 export type ReserveVars0 = {
   enabled: TONBool;
