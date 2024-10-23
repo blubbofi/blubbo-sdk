@@ -23,7 +23,7 @@
   },
   "author": "9oelM <hj923@hotmail.com>",
   "license": "None",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@redstone-finance/protocol": "^0.6.2",
     "@redstone-finance/sdk": "^0.6.2",
