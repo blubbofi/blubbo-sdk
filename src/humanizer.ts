@@ -6,16 +6,6 @@ export type NativeAmount = bigint;
 export type NativeBoolean = TONBool;
 export type HumanBoolean = boolean;
 
-/**
- * Takes some native data and converts it to a human-readable format and vice versa
- */
-export class Humanizer {
-  constructor(
-    public amount: AmountHumanizer,
-    public bool: BooleanHumanizer,
-  ) {}
-}
-
 class AmountHumanizer {
   /**
    * Convert a human-readable amount to a native amount
@@ -23,7 +13,7 @@ class AmountHumanizer {
    * it uses floating point arithmetic. If you need the most precise
    * conversion, consider using BigDecimal.
    */
-  static fromHuman(humanAmount: HumanAmount, decimals: number): NativeAmount {
+  fromHuman(humanAmount: HumanAmount, decimals: number): NativeAmount {
     const native = Number(humanAmount) * 10 ** decimals;
 
     return BigInt(native);
@@ -35,7 +25,7 @@ class AmountHumanizer {
    * it uses floating point arithmetic. If you need the most precise
    * conversion, consider using BigDecimal.
    */
-  static toHuman(nativeAmount: NativeAmount, decimals: number): HumanAmount {
+  toHuman(nativeAmount: NativeAmount, decimals: number): HumanAmount {
     const humanAmount = Number(nativeAmount) / 10 ** decimals;
 
     return humanAmount.toString();
@@ -43,15 +33,23 @@ class AmountHumanizer {
 }
 
 class BooleanHumanizer {
-  static fromHuman(humanBoolean: HumanBoolean): NativeBoolean {
+  fromHuman(humanBoolean: HumanBoolean): NativeBoolean {
     return humanBoolean ? TONBool.TRUE : TONBool.FALSE;
   }
 
-  static toHuman(nativeBoolean: NativeBoolean): HumanBoolean {
+  toHuman(nativeBoolean: NativeBoolean): HumanBoolean {
     if (nativeBoolean === TONBool.TRUE) {
       return true;
     }
 
     return false;
   }
+}
+
+/**
+ * Takes some native data and converts it to a human-readable format and vice versa
+ */
+export class Humanizer {
+  public static amount: AmountHumanizer = new AmountHumanizer();
+  public static bool: BooleanHumanizer = new BooleanHumanizer();
 }
