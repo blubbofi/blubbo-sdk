@@ -35,6 +35,14 @@ class Reserves {
       0: "TONCOIN",
       1: "USDT",
     } as const,
+    symbol: {
+      0: "TON",
+      1: "USDT",
+    } as const,
+    name: {
+      0: "Toncoin",
+      1: "Tether",
+    },
   });
 }
 
