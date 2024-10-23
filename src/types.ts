@@ -1,4 +1,5 @@
-import { Cell } from "@ton/core";
+import { Address, Cell, Dictionary } from "@ton/core";
+import { Maybe } from "@ton/core/dist/utils/maybe";
 
 export const TONBool = Object.freeze({
   TRUE: -1n,
@@ -6,6 +7,8 @@ export const TONBool = Object.freeze({
 });
 
 export type TONBool = typeof TONBool.TRUE | typeof TONBool.FALSE;
+
+export type ReserveId = 0n | 1n;
 
 export function isTONBool(
   value: bigint,
@@ -53,4 +56,97 @@ export type BeachReserveStorage = {
   reserve_vars_1: Cell;
   reserve_vars_2: Cell;
   reserve_vars_3: Cell;
+};
+
+export type SendDepositArgs = {
+  reserve_id_6: ReserveId;
+  jetton_amount: bigint;
+  to: Address;
+  response_address: Address;
+  forward_ton_amount: bigint;
+};
+
+export type SendDepositToSotwArgs = Pick<
+  SendDepositArgs,
+  "jetton_amount" | "reserve_id_6" | "response_address"
+>;
+
+export type ContractInteractionDepositArgs = Omit<
+  SendDepositArgs,
+  "forward_ton_amount"
+>;
+
+export type SendWithdrawArgs = {
+  face_amount: bigint;
+  reserve_id_6: ReserveId;
+  configPayload: Cell;
+  configSignature: Cell;
+  redstoneData: Cell;
+};
+
+export type ContractInteractionWithdrawArgs = Omit<
+  SendWithdrawArgs,
+  "configPayload" | "configSignature"
+>;
+
+export type SendBorrowArgs = {
+  face_amount: bigint;
+  reserve_id_6: ReserveId;
+  configPayload: Cell;
+  configSignature: Cell;
+  redstoneData: Cell;
+};
+
+export type ContractInteractionBorrowArgs = Omit<
+  SendBorrowArgs,
+  "configPayload" | "configSignature"
+>;
+
+export type SendRepayArgs = {
+  reserve_id_6: ReserveId;
+  jetton_amount: bigint;
+  to: Address;
+  response_address: Address;
+  forward_ton_amount: bigint;
+};
+
+export type SendRepayToSotwArgs = Pick<
+  SendRepayArgs,
+  "jetton_amount" | "reserve_id_6" | "response_address"
+>;
+
+export type ContractInteractionRepayArgs = Omit<
+  SendRepayArgs,
+  "forward_ton_amount"
+>;
+
+export type WithGas<T> = {
+  gas: bigint;
+} & T;
+
+export type BeachUserVars0 = {
+  owner_address: Address;
+  beach_master_address: Address;
+  // Null means empty dictionary
+  raw_deposit_per_jetton_dict: null | Dictionary<bigint, Cell>;
+  // Null means empty dictionary
+  raw_debt_per_jetton_dict: null | Dictionary<bigint, Cell>;
+  beach_user_code: Cell;
+  // Unused for now (always set as null)
+  additionalData: Maybe<Cell>;
+};
+
+export type BeachUserVars1 = {
+  tx_locks: Cell;
+};
+
+export type TxLocks = {
+  withdrawal_lock_id: bigint;
+  withdrawal_lock: bigint;
+  borrowing_lock_id: bigint;
+  borrowing_lock: bigint;
+  repayment_lock_id: bigint;
+  repayment_lock: bigint;
+  liquidation_lock_id: bigint;
+  liquidation_lock: bigint;
 };
