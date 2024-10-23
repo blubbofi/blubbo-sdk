@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "description": "SDK that interacts with BeachFi contracts",
   "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "files": [
+    "build"
+  ],
   "repository": "https://github.com/BeachFi/sdk.git",
   "scripts": {
     "build:tsc": "tsc",
     "build:dev": "tsc",
     "build:prod": "npm-run-all --serial build:tsc obfuscate",
+    "prepublishOnly": "yarn build:prod",
     "obfuscate": "npx ts-node ./ob.ts",
     "tsc:check": "tsc --noEmit",
     "eslint:check": "eslint --config eslint.config.mjs **/*.ts",
