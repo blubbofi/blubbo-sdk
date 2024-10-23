@@ -28,8 +28,8 @@ class AddressBook {
 class Reserves {
   public static testnet_2024_10_22_847a54a = Object.freeze({
     normal: {
-      TONCOIN: 0n,
-      USDT: 1n,
+      TONCOIN: 0,
+      USDT: 1,
     } as const,
     reverse: {
       0: "TONCOIN",
