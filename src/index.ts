@@ -8,4 +8,6 @@ export * from "./utils";
 export * from "./beach_master";
 export * from "./sotw";
 export * from "./contract_interaction";
+export * from "./humanizer";
 export * from "./oracle/redstone";
+export * from "./jetton";
