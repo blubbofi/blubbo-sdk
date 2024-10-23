@@ -1,10 +1,10 @@
 import { TONBool } from "./types";
 
-type HumanAmount = string;
-type NativeAmount = bigint;
+export type HumanAmount = string;
+export type NativeAmount = bigint;
 
-type NativeBoolean = TONBool;
-type HumanBoolean = boolean;
+export type NativeBoolean = TONBool;
+export type HumanBoolean = boolean;
 
 /**
  * Takes some native data and converts it to a human-readable format and vice versa
