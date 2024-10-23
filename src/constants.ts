@@ -42,7 +42,7 @@ class Reserves {
     name: {
       0: "Toncoin",
       1: "Tether",
-    },
+    } as const,
   });
 }
 
