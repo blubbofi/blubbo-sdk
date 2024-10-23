@@ -18,8 +18,10 @@ describe("Smoke tests", () => {
     });
     try {
       await contractInteraction.beachMaster.getReserve(
-        ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.normal
-          .TONCOIN,
+        BigInt(
+          ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.normal
+            .TONCOIN,
+        ),
       );
     } catch (e) {
       fail(e);
