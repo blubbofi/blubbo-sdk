@@ -32,11 +32,13 @@ class Reserves {
         name: "Toncoin",
         symbol: "TON",
         id: 0,
+        decimals: 9,
       },
       1: {
         name: "Tether",
         symbol: "USDT",
         id: 1,
+        decimals: 6,
       },
     },
     bySymbol: {
@@ -44,11 +46,13 @@ class Reserves {
         name: "Toncoin",
         symbol: "TON",
         id: 0,
+        decimals: 9,
       },
       USDT: {
         name: "Tether",
         symbol: "USDT",
         id: 1,
+        decimals: 6,
       },
     },
   } as const);
