@@ -36,7 +36,7 @@ export class ContractInteraction {
 
   public deposit(sender: Sender, args: ContractInteractionDepositArgs) {
     if (
-      args.reserve_id_6 === this.constantsByDeployment.Reserves.normal.TONCOIN
+      args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
     ) {
       const {
         jetton_amount,
@@ -60,7 +60,7 @@ export class ContractInteraction {
 
   public withdraw(sender: Sender, args: ContractInteractionWithdrawArgs) {
     const gas =
-      args.reserve_id_6 === this.constantsByDeployment.Reserves.normal.TONCOIN
+      args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
         ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN
         : this.constantsByDeployment.Fee.WITHDRAW.OTHER;
 
@@ -74,7 +74,7 @@ export class ContractInteraction {
 
   public borrow(sender: Sender, args: ContractInteractionBorrowArgs) {
     const gas =
-      args.reserve_id_6 === this.constantsByDeployment.Reserves.normal.TONCOIN
+      args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
         ? this.constantsByDeployment.Fee.BORROW.TONCOIN
         : this.constantsByDeployment.Fee.BORROW.OTHER;
 
@@ -88,7 +88,7 @@ export class ContractInteraction {
 
   public repay(sender: Sender, args: ContractInteractionRepayArgs) {
     if (
-      args.reserve_id_6 === this.constantsByDeployment.Reserves.normal.TONCOIN
+      args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
     ) {
       const {
         jetton_amount,

@@ -27,23 +27,31 @@ class AddressBook {
 
 class Reserves {
   public static testnet_2024_10_22_847a54a = Object.freeze({
-    normal: {
-      TONCOIN: 0,
-      USDT: 1,
-    } as const,
-    reverse: {
-      0: "TONCOIN",
-      1: "USDT",
-    } as const,
-    symbol: {
-      0: "TON",
-      1: "USDT",
-    } as const,
-    name: {
-      0: "Toncoin",
-      1: "Tether",
-    } as const,
-  });
+    byId: {
+      0: {
+        name: "Toncoin",
+        symbol: "TON",
+        id: 0,
+      },
+      1: {
+        name: "Tether",
+        symbol: "USDT",
+        id: 1,
+      },
+    },
+    bySymbol: {
+      TON: {
+        name: "Toncoin",
+        symbol: "TON",
+        id: 0,
+      },
+      USDT: {
+        name: "Tether",
+        symbol: "USDT",
+        id: 1,
+      },
+    },
+  } as const);
 }
 
 class Fee {
