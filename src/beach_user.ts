@@ -18,9 +18,6 @@ export class BeachUser implements Contract {
     return new BeachUser(address);
   }
 
-  static getBeachUserAddress = (beachMasterAddress: Address) =>
-    BeachUser.createFromAddress(beachMasterAddress);
-
   static unpackUserVars0(cell: Cell): BeachUserVars0 {
     const slice = cell.asSlice();
     const owner_address = slice.loadAddress();

@@ -6,6 +6,7 @@ export * from "./math";
 export * from "./types";
 export * from "./utils";
 export * from "./beach_master";
+export * from "./beach_user";
 export * from "./sotw";
 export * from "./contract_interaction";
 export * from "./humanizer";
