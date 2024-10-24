@@ -192,6 +192,20 @@ export class BeachMaster implements Contract {
     return version;
   }
 
+  async getBeachUserAddress(
+    provider: ContractProvider,
+    userWalletAddress: Address,
+  ) {
+    const res = await provider.get("fetch_beach_user_address", [
+      {
+        type: `slice`,
+        cell: beginCell().storeAddress(userWalletAddress).endCell(),
+      },
+    ]);
+    const beachUserAddress = res.stack.readAddress();
+    return beachUserAddress;
+  }
+
   static createSendDepositBody(args: SendDepositArgs) {
     const forwardPayload = beginCell()
       .storeUint(0b000, 3) // Deposit constructor prefix

@@ -11,3 +11,4 @@ export * from "./contract_interaction";
 export * from "./humanizer";
 export * from "./oracle/redstone";
 export * from "./jetton";
+export * from "./beach_user_utils";

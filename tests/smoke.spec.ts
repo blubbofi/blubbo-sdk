@@ -2,6 +2,8 @@ import {
   ConstantsByDeployment,
   ContractInteraction,
   getStandardJettonWalletForAddress,
+  BeachUserUtils,
+  BeachMaster,
 } from "../src/index";
 import { Address, TonClient } from "@ton/ton";
 
@@ -59,5 +61,31 @@ describe("Smoke tests", () => {
     expect(
       jettonWalletAddress.address.equals(expectedJettonWalletAddress),
     ).toBe(true);
+  });
+
+  it(`should give beach user address testnet_2024_10_22_847a54a`, async () => {
+    const ownerAddress = Address.parse(
+      `EQC0yj5mT3jND5VWPCpAC_nqErRMtXyurNO291J4PcWjmi1I`,
+    );
+    const calculatedAddress =
+      BeachUserUtils.testnet_2024_10_22_847a54a.calculateUserBeachUserAddress(
+        ownerAddress,
+        ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook
+          .BEACH_MASTER,
+        ConstantsByDeployment.testnet_2024_10_22_847a54a.Config.BEACH_USER,
+      );
+
+    const client = new TonClient({
+      endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+    });
+    const bm = client.open(
+      BeachMaster.createFromAddress(
+        ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook
+          .BEACH_MASTER,
+      ),
+    );
+    const answerfromBlockchain = await bm.getBeachUserAddress(ownerAddress);
+
+    expect(calculatedAddress.equals(answerfromBlockchain)).toBe(true);
   });
 });
