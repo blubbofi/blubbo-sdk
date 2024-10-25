@@ -12,7 +12,7 @@ import {
 } from "./types";
 import { ConstantsByDeployment } from "./constants";
 import { TonClient } from "@ton/ton";
-import { SendTransactionRequest } from "@tonconnect/sdk";
+import type { SendTransactionRequest } from "@tonconnect/sdk";
 import { JettonMinter } from "./jetton";
 
 export class ContractInteraction {
