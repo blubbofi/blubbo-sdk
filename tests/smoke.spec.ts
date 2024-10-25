@@ -1,3 +1,7 @@
+import * as dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 import {
   ConstantsByDeployment,
   ContractInteraction,
@@ -7,10 +11,19 @@ import {
 } from "../src/index";
 import { Address, TonClient } from "@ton/ton";
 
+const TONCENTER_API_KEY = process.env["TONCENTER_API_KEY"] as
+  | string
+  | undefined;
+
+if (!TONCENTER_API_KEY) {
+  throw new Error("TONCENTER_API_KEY env variable is required");
+}
+
 describe("Smoke tests", () => {
   it(`should get reserve`, async () => {
     const client = new TonClient({
       endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+      apiKey: TONCENTER_API_KEY,
     });
     const contractInteraction = new ContractInteraction({
       client,
@@ -38,6 +51,7 @@ describe("Smoke tests", () => {
     const client = new TonClient({
       // We're on mainnet for this one
       endpoint: "https://toncenter.com/api/v2/jsonRPC",
+      apiKey: TONCENTER_API_KEY,
     });
 
     // https://tonviewer.com/EQAVkAV5mRv5O1H6qZNRuhY4FdJlInqoz4n-_LThUZ0TbJxE/jetton/EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav
@@ -77,6 +91,7 @@ describe("Smoke tests", () => {
 
     const client = new TonClient({
       endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+      apiKey: TONCENTER_API_KEY,
     });
     const bm = client.open(
       BeachMaster.createFromAddress(

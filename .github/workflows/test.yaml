@@ -16,3 +16,5 @@ jobs:
         run: yarn
       - name: Test
         run: yarn test
+        env:
+          TONCENTER_API_KEY: ${{ secrets.TONCENTER_API_KEY }}
