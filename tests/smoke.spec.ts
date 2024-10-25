@@ -77,16 +77,16 @@ describe("Smoke tests", () => {
     ).toBe(true);
   });
 
-  it(`should give beach user address testnet_2024_10_25_4ed8ff4`, async () => {
+  it(`should give beach user address testnet_2024_10_25_687c2cb`, async () => {
     const ownerAddress = Address.parse(
       `EQC0yj5mT3jND5VWPCpAC_nqErRMtXyurNO291J4PcWjmi1I`,
     );
     const calculatedAddress =
-      BeachUserUtils.testnet_2024_10_25_4ed8ff4.calculateUserBeachUserAddress(
+      BeachUserUtils.testnet_2024_10_25_687c2cb.calculateUserBeachUserAddress(
         ownerAddress,
-        ConstantsByDeployment.testnet_2024_10_25_4ed8ff4.AddressBook
+        ConstantsByDeployment.testnet_2024_10_25_687c2cb.AddressBook
           .BEACH_MASTER,
-        ConstantsByDeployment.testnet_2024_10_25_4ed8ff4.Config.BEACH_USER,
+        ConstantsByDeployment.testnet_2024_10_25_687c2cb.Config.BEACH_USER,
       );
 
     const client = new TonClient({
@@ -95,7 +95,7 @@ describe("Smoke tests", () => {
     });
     const bm = client.open(
       BeachMaster.createFromAddress(
-        ConstantsByDeployment.testnet_2024_10_25_4ed8ff4.AddressBook
+        ConstantsByDeployment.testnet_2024_10_25_687c2cb.AddressBook
           .BEACH_MASTER,
       ),
     );

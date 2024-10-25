@@ -136,5 +136,5 @@ class BeachUserUtils_testnet_2024_10_22_847a54a {
 
 export class BeachUserUtils {
   static testnet_2024_10_22_847a54a = BeachUserUtils_testnet_2024_10_22_847a54a;
-  static testnet_2024_10_25_4ed8ff4 = this.testnet_2024_10_22_847a54a;
+  static testnet_2024_10_25_687c2cb = this.testnet_2024_10_22_847a54a;
 }
