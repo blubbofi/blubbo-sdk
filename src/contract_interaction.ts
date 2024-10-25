@@ -279,13 +279,13 @@ export class ContractInteraction {
       args.to,
       args.jetton_amount,
       toNano("0.05"), // forward_ton_amount
-      toNano('0.015'), // total_ton_amount
+      toNano("0.015"), // total_ton_amount
       0n, // query_id
     );
     const messages: SendTransactionRequest["messages"] = [
       {
         address: args.jetton_minter_addr.toString(),
-        amount: (toNano(`0.15`) + toNano('0.015')).toString(),
+        amount: (toNano(`0.15`) + toNano("0.015")).toString(),
         payload: msg.toBoc().toString("base64"),
       },
     ];
