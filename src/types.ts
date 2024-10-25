@@ -152,3 +152,28 @@ export type TxLocks = {
   liquidation_lock_id: bigint;
   liquidation_lock: bigint;
 };
+
+export type CollateralData = {
+  total_discounted_face_deposit: bigint;
+  total_collateral_required: bigint;
+};
+
+/**
+ * @example
+ * ```
+   decimals: 9n,
+   borrow_factor_pct: 80n,
+   collateral_factor_pct: 70n,
+   lending_accumulator: 1200000000000000000000000000n,
+   debt_accumulator: 1100000000000000000000000000n,
+   price: 539997381n, // 5.39997381 USD
+   ```
+ */
+export type VariablePerReserve = {
+  decimals: bigint;
+  borrow_factor_pct: bigint;
+  collateral_factor_pct: bigint;
+  lending_accumulator: bigint;
+  debt_accumulator: bigint;
+  price: bigint;
+};

@@ -6,7 +6,15 @@ import {
   ContractProvider,
   Dictionary,
 } from "@ton/core";
-import { BeachUserVars0, BeachUserVars1, TxLocks } from "./types";
+import {
+  BeachUserVars0,
+  BeachUserVars1,
+  TxLocks,
+  CollateralData,
+  ReserveId,
+  VariablePerReserve,
+} from "./types";
+import { HumanBoolean, Humanizer } from "./humanizer";
 
 export class BeachUser implements Contract {
   constructor(
@@ -132,6 +140,45 @@ export class BeachUser implements Contract {
     return beginCell().storeRef(userVars0).storeRef(userVars1).endCell();
   }
 
+  static packVariablePerReserve({
+    decimals,
+    borrow_factor_pct,
+    collateral_factor_pct,
+    lending_accumulator,
+    debt_accumulator,
+    price,
+  }: VariablePerReserve): Cell {
+    return beginCell()
+      .storeUint(decimals, 8)
+      .storeUint(borrow_factor_pct, 8)
+      .storeUint(collateral_factor_pct, 8)
+      .storeUint(lending_accumulator, 100)
+      .storeUint(debt_accumulator, 100)
+      .storeUint(price, 128)
+      .endCell();
+  }
+
+  static packVariablesPerReserveDict(
+    variables_per_reserve: Record<ReserveId, VariablePerReserve>,
+  ): Dictionary<bigint, Cell> {
+    const variables_per_reserve_dict = Dictionary.empty<bigint, Cell>(
+      Dictionary.Keys.BigInt(6),
+      Dictionary.Values.Cell(),
+    );
+    for (const [reserveId, variable_per_reserve] of Object.entries(
+      variables_per_reserve,
+    )) {
+      const rId = BigInt(reserveId);
+
+      variables_per_reserve_dict.set(
+        rId,
+        BeachUser.packVariablePerReserve(variable_per_reserve),
+      );
+    }
+
+    return variables_per_reserve_dict;
+  }
+
   async getStorage(provider: ContractProvider) {
     const res = await provider.get("fetch_storage", []);
     const stack = res.stack;
@@ -188,6 +235,35 @@ export class BeachUser implements Contract {
       repayment_lock,
       liquidation_lock_id,
       liquidation_lock,
+    };
+  }
+
+  async getCollateralData(
+    provider: ContractProvider,
+    variables_per_reserve: Record<ReserveId, VariablePerReserve>,
+    apply_borrow_factor: HumanBoolean,
+  ): Promise<CollateralData> {
+    const res = await provider.get("fetch_collateral_data", [
+      {
+        type: `cell`,
+        // Don't know how to send dictionary as a cell, so just wrap it in a cell
+        cell: beginCell()
+          .storeDict(
+            BeachUser.packVariablesPerReserveDict(variables_per_reserve),
+          )
+          .endCell(),
+      },
+      {
+        type: `int`,
+        value: Humanizer.bool.fromHuman(apply_borrow_factor),
+      },
+    ]);
+
+    const total_discounted_face_deposit = res.stack.readBigNumber();
+    const total_collateral_required = res.stack.readBigNumber();
+    return {
+      total_discounted_face_deposit,
+      total_collateral_required,
     };
   }
 }
