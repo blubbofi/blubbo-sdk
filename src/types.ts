@@ -122,6 +122,14 @@ export type ContractInteractionRepayArgs = Omit<
   "forward_ton_amount"
 >;
 
+export type ContractInteractionMintArgs = {
+  jetton_minter_addr: Address;
+  response_addr: Address;
+  to: Address;
+  jetton_amount: bigint;
+  total_ton_amount: bigint;
+};
+
 export type WithGas<T> = {
   gas: bigint;
 } & T;
