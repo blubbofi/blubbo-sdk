@@ -1,4 +1,4 @@
-import { Address, OpenedContract, Sender, toNano } from "@ton/core";
+import { Address, Cell, OpenedContract, Sender, toNano } from "@ton/core";
 import { BeachMaster } from "./beach_master";
 import { Sotw } from "./sotw";
 import {
@@ -294,5 +294,20 @@ export class ContractInteraction {
       validUntil: Date.now() + 2 * 60 * 1000, // 2 minutes,
       messages,
     };
+  }
+
+  /**
+   * @example
+   * const sendTxResp = await tonConnectUI.sendTransaction(contractInteraction.createMockJettonMintRequest({
+   *  jetton_minter_addr: jettonMinter.address,
+   *  response_addr: ownerAddress,
+   *  to: toAddressParsed,
+   *  jetton_amount: Humanizer.genericNumber.fromHuman(`100`, reserve.decimals),
+   * }))
+   *
+   * const txHash = contractInteraction.getTxHash(sendTxResp.boc)
+   */
+  public getTxHash(boc: string) {
+    return Cell.fromBase64(boc).hash().toString("hex");
   }
 }
