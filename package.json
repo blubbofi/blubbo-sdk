@@ -1,6 +1,6 @@
 {
   "name": "@beachfi/sdk",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "SDK that interacts with BeachFi contracts",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
