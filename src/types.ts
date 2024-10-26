@@ -127,7 +127,6 @@ export type ContractInteractionMintArgs = {
   response_addr: Address;
   to: Address;
   jetton_amount: bigint;
-  total_ton_amount: bigint;
 };
 
 export type WithGas<T> = {
