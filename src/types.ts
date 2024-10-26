@@ -75,7 +75,7 @@ export type SendDepositToSotwArgs = Pick<
 
 export type ContractInteractionDepositArgs = Omit<
   SendDepositArgs,
-  "forward_ton_amount"
+  "forward_ton_amount" | "to"
 >;
 
 export type SendWithdrawArgs = {
@@ -119,7 +119,7 @@ export type SendRepayToSotwArgs = Pick<
 
 export type ContractInteractionRepayArgs = Omit<
   SendRepayArgs,
-  "forward_ton_amount"
+  "forward_ton_amount" | "to"
 >;
 
 export type ContractInteractionMintArgs = {

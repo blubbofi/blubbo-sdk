@@ -76,6 +76,7 @@ export class ContractInteraction {
         amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL.toString(),
         payload: BeachMaster.createSendDepositBody({
           ...args,
+          to: this.beachMaster.address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
         })
@@ -109,6 +110,7 @@ export class ContractInteraction {
 
     return this.beachMaster.sendDeposit(sender, {
       ...args,
+      to: this.beachMaster.address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
     });
@@ -230,6 +232,7 @@ export class ContractInteraction {
         amount: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL.toString(),
         payload: BeachMaster.createSendRepayBody({
           ...args,
+          to: this.beachMaster.address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
         })
@@ -263,6 +266,7 @@ export class ContractInteraction {
 
     return this.beachMaster.sendRepay(sender, {
       ...args,
+      to: this.beachMaster.address,
       gas: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
     });
