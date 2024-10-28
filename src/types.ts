@@ -101,7 +101,7 @@ export type SendDepositToSotwArgs = Pick<
 
 export type ContractInteractionDepositArgs = Omit<
   SendDepositArgs,
-  "forward_ton_amount"
+  "forward_ton_amount" | "to"
 >;
 
 export type SendWithdrawArgs = {
@@ -193,7 +193,6 @@ export type SendRepayArgs = {
   /**
    * The amount of TON to forward to the contracts that will receive
    * forwarded messages from the first contract that received the transaction,
-   * to be used as a gas.
    */
   forward_ton_amount: bigint;
 };
@@ -205,7 +204,7 @@ export type SendRepayToSotwArgs = Pick<
 
 export type ContractInteractionRepayArgs = Omit<
   SendRepayArgs,
-  "forward_ton_amount"
+  "forward_ton_amount" | "to"
 >;
 
 export type ContractInteractionMintArgs = {
