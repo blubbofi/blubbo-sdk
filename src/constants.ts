@@ -40,6 +40,8 @@ class Reserves {
         symbol: "USDT",
         id: 1,
         decimals: 6,
+        minterAddress:
+          AddressBook.testnet_2024_10_22_847a54a.MOCK_USDT_JETTON_MINTER,
       },
     },
     bySymbol: {
@@ -54,6 +56,8 @@ class Reserves {
         symbol: "USDT",
         id: 1,
         decimals: 6,
+        minterAddress:
+          AddressBook.testnet_2024_10_22_847a54a.MOCK_USDT_JETTON_MINTER,
       },
     },
   } as const);

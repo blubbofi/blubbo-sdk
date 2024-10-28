@@ -61,10 +61,36 @@ export type BeachReserveStorage = {
 };
 
 export type SendDepositArgs = {
+  /**
+   * The reserve ID of the jetton.
+   * Each jetton has a unique reserve ID.
+   */
   reserve_id_6: ReserveId;
+  /**
+   * Amount to deposit, in its native amount.
+   * Note that the decimals in the native amount differs across different jetton types.
+   */
   jetton_amount: bigint;
+  /**
+   * In case of TON, this is the address of SOTW.
+   *
+   * In case of jetton, this is the address of user's jetton wallet
+   * ```
+   * user -> user's jetton wallet -> receiver's jetton wallet -> receiver
+   *         ^^ this address
+   * ```
+   */
   to: Address;
+  /**
+   * The address of the contract that will receive the leftover TON that was
+   * not used as gas. Typically, this is the address of the user's wallet.
+   */
   response_address: Address;
+  /**
+   * The amount of TON to forward to the contracts that will receive
+   * forwarded messages from the first contract that received the transaction,
+   * to be used as a gas.
+   */
   forward_ton_amount: bigint;
 };
 
@@ -75,14 +101,31 @@ export type SendDepositToSotwArgs = Pick<
 
 export type ContractInteractionDepositArgs = Omit<
   SendDepositArgs,
-  "forward_ton_amount" | "to"
+  "forward_ton_amount"
 >;
 
 export type SendWithdrawArgs = {
-  face_amount: bigint;
+  /**
+   * The reserve ID of the jetton.
+   * Each jetton has a unique reserve ID.
+   */
   reserve_id_6: ReserveId;
+  /**
+   * Amount to withdraw, in its native amount.
+   * Note that the decimals in the native amount differs across different jetton types.
+   */
+  face_amount: bigint;
+  /**
+   * Config payload. This is calculated statically before the transaction.
+   */
   configPayload: Cell;
+  /**
+   * Config signature. This is calculated statically before the transaction.
+   */
   configSignature: Cell;
+  /**
+   * Redstone data. This is retrieved from Redstone oracle before the transaction.
+   */
   redstoneData: Cell;
 };
 
@@ -92,10 +135,27 @@ export type ContractInteractionWithdrawArgs = Omit<
 >;
 
 export type SendBorrowArgs = {
-  face_amount: bigint;
+  /**
+   * The reserve ID of the jetton.
+   * Each jetton has a unique reserve ID.
+   */
   reserve_id_6: ReserveId;
+  /**
+   * Amount to borrow, in its native amount.
+   * Note that the decimals in the native amount differs across different jetton types.
+   */
+  face_amount: bigint;
+  /**
+   * Config payload. This is calculated statically before the transaction.
+   */
   configPayload: Cell;
+  /**
+   * Config signature. This is calculated statically before the transaction.
+   */
   configSignature: Cell;
+  /**
+   * Redstone data. This is retrieved from Redstone oracle before the transaction.
+   */
   redstoneData: Cell;
 };
 
@@ -105,10 +165,36 @@ export type ContractInteractionBorrowArgs = Omit<
 >;
 
 export type SendRepayArgs = {
+  /**
+   * The reserve ID of the jetton.
+   * Each jetton has a unique reserve ID.
+   */
   reserve_id_6: ReserveId;
+  /**
+   * Amount to repay, in its native amount.
+   * Note that the decimals in the native amount differs across different jetton types.
+   */
   jetton_amount: bigint;
+  /**
+   * In case of TON, this is the address of SOTW.
+   *
+   * In case of jetton, this is the address of user's jetton wallet
+   * ```
+   * user -> user's jetton wallet -> receiver's jetton wallet -> receiver
+   *         ^^ this address
+   * ```
+   */
   to: Address;
+  /**
+   * The address of the contract that will receive the leftover TON that was
+   * not used as gas. Typically, this is the address of the user's wallet.
+   */
   response_address: Address;
+  /**
+   * The amount of TON to forward to the contracts that will receive
+   * forwarded messages from the first contract that received the transaction,
+   * to be used as a gas.
+   */
   forward_ton_amount: bigint;
 };
 
@@ -119,7 +205,7 @@ export type SendRepayToSotwArgs = Pick<
 
 export type ContractInteractionRepayArgs = Omit<
   SendRepayArgs,
-  "forward_ton_amount" | "to"
+  "forward_ton_amount"
 >;
 
 export type ContractInteractionMintArgs = {
@@ -131,6 +217,13 @@ export type ContractInteractionMintArgs = {
 
 export type WithGas<T> = {
   gas: bigint;
+} & T;
+
+export type WithOwnerAddress<T> = {
+  /**
+   * The address of user's wallet that is initiating the transaction
+   */
+  owner_address: Address;
 } & T;
 
 export type BeachUserVars0 = {

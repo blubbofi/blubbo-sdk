@@ -9,11 +9,16 @@ import {
   ContractInteractionWithdrawArgs,
   SendDepositToSotwArgs,
   SendRepayToSotwArgs,
+  WithOwnerAddress,
 } from "./types";
 import { ConstantsByDeployment } from "./constants";
 import { TonClient } from "@ton/ton";
 import type { SendTransactionRequest } from "@tonconnect/sdk";
-import { JettonMinter } from "./jetton";
+import {
+  getStandardJettonWalletForAddress,
+  JettonMinter,
+  JettonWallet,
+} from "./jetton";
 
 export class ContractInteraction {
   beachMaster: OpenedContract<BeachMaster>;
@@ -41,12 +46,12 @@ export class ContractInteraction {
    * @example
    * ```
    * const [tonConnectUI] = useTonConnectUI();
-   * const result = await tonConnectUI.sendTransaction(depositRequest({...}));
+   * const result = await tonConnectUI.sendTransaction(await depositRequest({...}));
    * ```
    */
-  public depositRequest(
-    args: ContractInteractionDepositArgs,
-  ): SendTransactionRequest {
+  public async depositRequest(
+    args: WithOwnerAddress<ContractInteractionDepositArgs>,
+  ): Promise<SendTransactionRequest> {
     const messages: SendTransactionRequest["messages"] = [];
 
     if (
@@ -71,10 +76,22 @@ export class ContractInteraction {
           .toString("base64"),
       });
     } else {
+      const jettonMinterAddress =
+        this.constantsByDeployment.Reserves.byId[args.reserve_id_6]
+          .minterAddress;
+
+      const ownerJettonWallet = await getStandardJettonWalletForAddress({
+        tonClient: this.client,
+        address: {
+          owner: args.owner_address,
+          jettonMinter: jettonMinterAddress,
+        },
+      });
+
       messages.push({
-        address: this.beachMaster.address.toString(),
+        address: ownerJettonWallet.address.toString(),
         amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL.toString(),
-        payload: BeachMaster.createSendDepositBody({
+        payload: JettonWallet.createSendDepositBody({
           ...args,
           to: this.beachMaster.address,
           forward_ton_amount:
@@ -91,7 +108,10 @@ export class ContractInteraction {
     };
   }
 
-  public deposit(sender: Sender, args: ContractInteractionDepositArgs) {
+  public async deposit(
+    sender: Sender,
+    args: WithOwnerAddress<ContractInteractionDepositArgs>,
+  ) {
     if (
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
     ) {
@@ -108,8 +128,21 @@ export class ContractInteraction {
       });
     }
 
-    return this.beachMaster.sendDeposit(sender, {
-      ...args,
+    const { owner_address, ...restArgs } = args;
+
+    const jettonMinterAddress =
+      this.constantsByDeployment.Reserves.byId[args.reserve_id_6].minterAddress;
+
+    const ownerJettonWallet = await getStandardJettonWalletForAddress({
+      tonClient: this.client,
+      address: {
+        owner: owner_address,
+        jettonMinter: jettonMinterAddress,
+      },
+    });
+
+    return ownerJettonWallet.sendDeposit(sender, {
+      ...restArgs,
       to: this.beachMaster.address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
@@ -200,9 +233,9 @@ export class ContractInteraction {
     });
   }
 
-  public repayRequest(
-    args: ContractInteractionRepayArgs,
-  ): SendTransactionRequest {
+  public async repayRequest(
+    args: WithOwnerAddress<ContractInteractionRepayArgs>,
+  ): Promise<SendTransactionRequest> {
     const messages: SendTransactionRequest["messages"] = [];
 
     if (
@@ -227,11 +260,23 @@ export class ContractInteraction {
           .toString("base64"),
       });
     } else {
+      const { owner_address, ...restArgs } = args;
+
+      const ownerJettonWallet = await getStandardJettonWalletForAddress({
+        tonClient: this.client,
+        address: {
+          owner: owner_address,
+          jettonMinter:
+            this.constantsByDeployment.Reserves.byId[args.reserve_id_6]
+              .minterAddress,
+        },
+      });
+
       messages.push({
-        address: this.beachMaster.address.toString(),
+        address: ownerJettonWallet.toString(),
         amount: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL.toString(),
-        payload: BeachMaster.createSendRepayBody({
-          ...args,
+        payload: JettonWallet.createSendRepayBody({
+          ...restArgs,
           to: this.beachMaster.address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
@@ -247,7 +292,10 @@ export class ContractInteraction {
     };
   }
 
-  public repay(sender: Sender, args: ContractInteractionRepayArgs) {
+  public async repay(
+    sender: Sender,
+    args: WithOwnerAddress<ContractInteractionRepayArgs>,
+  ) {
     if (
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
     ) {
@@ -264,11 +312,23 @@ export class ContractInteraction {
       });
     }
 
-    return this.beachMaster.sendRepay(sender, {
-      ...args,
+    const { owner_address, ...restArgs } = args;
+
+    const ownerJettonWallet = await getStandardJettonWalletForAddress({
+      tonClient: this.client,
+      address: {
+        owner: owner_address,
+        jettonMinter:
+          this.constantsByDeployment.Reserves.byId[args.reserve_id_6]
+            .minterAddress,
+      },
+    });
+
+    return ownerJettonWallet.sendRepay(sender, {
+      ...restArgs,
       to: this.beachMaster.address,
-      gas: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL,
-      forward_ton_amount: this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
+      gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
+      forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
     });
   }
 

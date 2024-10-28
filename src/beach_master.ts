@@ -15,13 +15,10 @@ import {
   ReserveVars2,
   ReserveVars3,
   SendBorrowArgs,
-  SendDepositArgs,
-  SendRepayArgs,
   SendWithdrawArgs,
   WithGas,
 } from "./types";
 import { Opcode } from "./constants";
-import { JettonWallet } from "./jetton/jetton_wallet";
 
 export class BeachMaster implements Contract {
   constructor(
@@ -204,62 +201,6 @@ export class BeachMaster implements Contract {
     ]);
     const beachUserAddress = res.stack.readAddress();
     return beachUserAddress;
-  }
-
-  static createSendDepositBody(args: SendDepositArgs) {
-    const forwardPayload = beginCell()
-      .storeUint(0b000, 3) // Deposit constructor prefix
-      .storeUint(args.reserve_id_6, 6)
-      .endCell();
-
-    return JettonWallet.transferMessage(
-      args.jetton_amount,
-      args.to,
-      args.response_address,
-      null,
-      args.forward_ton_amount,
-      forwardPayload,
-    );
-  }
-
-  async sendDeposit(
-    provider: ContractProvider,
-    via: Sender,
-    args: WithGas<SendDepositArgs>,
-  ) {
-    return provider.internal(via, {
-      value: args.gas,
-      sendMode: SendMode.PAY_GAS_SEPARATELY,
-      body: BeachMaster.createSendDepositBody(args),
-    });
-  }
-
-  static createSendRepayBody(args: SendRepayArgs) {
-    const forwardPayload = beginCell()
-      .storeUint(0b001, 3) // Repay constructor prefix
-      .storeUint(args.reserve_id_6, 6)
-      .endCell();
-
-    return JettonWallet.transferMessage(
-      args.jetton_amount,
-      args.to,
-      args.response_address,
-      null,
-      args.forward_ton_amount,
-      forwardPayload,
-    );
-  }
-
-  async sendRepay(
-    provider: ContractProvider,
-    via: Sender,
-    args: WithGas<SendRepayArgs>,
-  ) {
-    return provider.internal(via, {
-      value: args.gas,
-      sendMode: SendMode.PAY_GAS_SEPARATELY,
-      body: BeachMaster.createSendRepayBody(args),
-    });
   }
 
   static createSendWithdrawBody(args: SendWithdrawArgs) {
