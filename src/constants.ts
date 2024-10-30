@@ -67,25 +67,45 @@ class Reserves {
 class Fee {
   public static testnet_2024_10_22_847a54a = Object.freeze({
     DEPOSIT: {
-      TONCOIN: toNano("0.2"),
+      TONCOIN: {
+        TOTAL: toNano("0.2"),
+        EXPECTED_REFUND: toNano("0.146"),
+      },
       OTHER: {
         TOTAL: toNano("0.2"),
         FORWARD: toNano("0.1"),
+        EXPECTED_REFUND: toNano("0.112"),
       },
     },
     WITHDRAW: {
-      TONCOIN: toNano("0.17"),
-      OTHER: toNano("0.17"),
+      TONCOIN: {
+        TOTAL: toNano("0.17"),
+        EXPECTED_REFUND: toNano(`0.101`),
+      },
+      OTHER: {
+        TOTAL: toNano("0.17"),
+        EXPECTED_REFUND: toNano(`0.0819`),
+      },
     },
     BORROW: {
-      TONCOIN: toNano("0.17"),
-      OTHER: toNano(`0.17`),
+      TONCOIN: {
+        TOTAL: toNano("0.17"),
+        EXPECTED_REFUND: toNano(`0.0958`),
+      },
+      OTHER: {
+        TOTAL: toNano(`0.17`),
+        EXPECTED_REFUND: toNano(`0.0769`),
+      },
     },
     REPAY: {
-      TONCOIN: toNano("0.17"),
+      TONCOIN: {
+        TOTAL: toNano("0.17"),
+        EXPECTED_REFUND: toNano(`0.0970`),
+      },
       OTHER: {
         TOTAL: toNano("0.2"),
         FORWARD: toNano("0.1"),
+        EXPECTED_REFUND: toNano(`0.0725`),
       },
     },
   });
