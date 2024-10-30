@@ -46,10 +46,11 @@ export class ContractInteraction {
    * @example
    * ```
    * const [tonConnectUI] = useTonConnectUI();
-   * const result = await tonConnectUI.sendTransaction(await depositRequest({...}));
+   * const contractInteraction = new ContractInteraction({ ... });
+   * const result = await tonConnectUI.sendTransaction(await contractInteraction.createDepositRequest({...}));
    * ```
    */
-  public async depositRequest(
+  public async createDepositRequest(
     args: WithOwnerAddress<ContractInteractionDepositArgs>,
   ): Promise<SendTransactionRequest> {
     const messages: SendTransactionRequest["messages"] = [];
@@ -65,7 +66,7 @@ export class ContractInteraction {
       messages.push({
         address: this.sotw.address.toString(),
         amount: (
-          jetton_amount + this.constantsByDeployment.Fee.DEPOSIT.TONCOIN
+          jetton_amount + this.constantsByDeployment.Fee.DEPOSIT.TONCOIN.TOTAL
         ).toString(),
         payload: Sotw.createSendDepositBody({
           jetton_amount,
@@ -124,7 +125,7 @@ export class ContractInteraction {
         jetton_amount,
         response_address,
         reserve_id_6,
-        gas: this.constantsByDeployment.Fee.DEPOSIT.TONCOIN,
+        gas: this.constantsByDeployment.Fee.DEPOSIT.TONCOIN.TOTAL,
       });
     }
 
@@ -149,7 +150,15 @@ export class ContractInteraction {
     });
   }
 
-  public withdrawRequest(
+  /**
+   * @example
+   * ```
+   * const [tonConnectUI] = useTonConnectUI();
+   * const contractInteraction = new ContractInteraction({ ... });
+   * const result = await tonConnectUI.sendTransaction(await contractInteraction.createWithdrawRequest({...}));
+   * ```
+   */
+  public createWithdrawRequest(
     args: ContractInteractionWithdrawArgs,
   ): SendTransactionRequest {
     const gas =
@@ -180,8 +189,8 @@ export class ContractInteraction {
   public withdraw(sender: Sender, args: ContractInteractionWithdrawArgs) {
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
-        ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN
-        : this.constantsByDeployment.Fee.WITHDRAW.OTHER;
+        ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN.TOTAL
+        : this.constantsByDeployment.Fee.WITHDRAW.OTHER.TOTAL;
 
     return this.beachMaster.sendWithdraw(sender, {
       ...args,
@@ -191,7 +200,15 @@ export class ContractInteraction {
     });
   }
 
-  public borrowRequest(
+  /**
+   * @example
+   * ```
+   * const [tonConnectUI] = useTonConnectUI();
+   * const contractInteraction = new ContractInteraction({ ... });
+   * const result = await tonConnectUI.sendTransaction(await contractInteraction.createBorrowRequest({...}));
+   * ```
+   */
+  public createBorrowRequest(
     args: ContractInteractionBorrowArgs,
   ): SendTransactionRequest {
     const gas =
@@ -222,8 +239,8 @@ export class ContractInteraction {
   public borrow(sender: Sender, args: ContractInteractionBorrowArgs) {
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
-        ? this.constantsByDeployment.Fee.BORROW.TONCOIN
-        : this.constantsByDeployment.Fee.BORROW.OTHER;
+        ? this.constantsByDeployment.Fee.BORROW.TONCOIN.TOTAL
+        : this.constantsByDeployment.Fee.BORROW.OTHER.TOTAL;
 
     return this.beachMaster.sendBorrow(sender, {
       ...args,
@@ -233,7 +250,15 @@ export class ContractInteraction {
     });
   }
 
-  public async repayRequest(
+  /**
+   * @example
+   * ```
+   * const [tonConnectUI] = useTonConnectUI();
+   * const contractInteraction = new ContractInteraction({ ... });
+   * const result = await tonConnectUI.sendTransaction(await contractInteraction.createRepayRequest({...}));
+   * ```
+   */
+  public async createRepayRequest(
     args: WithOwnerAddress<ContractInteractionRepayArgs>,
   ): Promise<SendTransactionRequest> {
     const messages: SendTransactionRequest["messages"] = [];
@@ -249,7 +274,7 @@ export class ContractInteraction {
       messages.push({
         address: this.sotw.address.toString(),
         amount: (
-          jetton_amount + this.constantsByDeployment.Fee.REPAY.TONCOIN
+          jetton_amount + this.constantsByDeployment.Fee.REPAY.TONCOIN.TOTAL
         ).toString(),
         payload: Sotw.createSendRepayBody({
           jetton_amount,
@@ -308,7 +333,7 @@ export class ContractInteraction {
         jetton_amount,
         response_address,
         reserve_id_6,
-        gas: this.constantsByDeployment.Fee.REPAY.TONCOIN,
+        gas: this.constantsByDeployment.Fee.REPAY.TONCOIN.TOTAL,
       });
     }
 
@@ -334,6 +359,12 @@ export class ContractInteraction {
 
   /**
    * Used to mint mock jettons for testing purposes.
+   * @example
+   * ```
+   * const [tonConnectUI] = useTonConnectUI();
+   * const contractInteraction = new ContractInteraction({ ... });
+   * const result = await tonConnectUI.sendTransaction(await contractInteraction.createMockJettonMintRequest({...}));
+   * ```
    */
   public createMockJettonMintRequest(
     args: ContractInteractionMintArgs,
