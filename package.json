@@ -1,13 +1,13 @@
 {
-  "name": "@beachfi/sdk",
+  "name": "@blubbofi/sdk",
   "version": "0.1.22",
-  "description": "SDK that interacts with BeachFi contracts",
+  "description": "SDK that interacts with Blubbo contracts",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "files": [
     "build"
   ],
-  "repository": "https://github.com/BeachFi/sdk.git",
+  "repository": "https://github.com/Blubbo/sdk.git",
   "scripts": {
     "build:tsc": "tsc",
     "build:dev": "tsc",

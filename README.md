@@ -1,3 +1,3 @@
-# @beachfi/sdk
+# @blubbofi/sdk
 
-SDK for interacting with BeachFi contracts.
+SDK for interacting with Blubbo contracts.

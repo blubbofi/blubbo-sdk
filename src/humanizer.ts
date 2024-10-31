@@ -55,7 +55,7 @@ class GenericNumberHumanizer {
 }
 
 /**
- * In BeachFi, we use 10**27 as a scaling factor for some numbers.
+ * In Blubbo, we use 10**27 as a scaling factor for some numbers.
  * This class helps to convert those numbers.
  */
 class ScaledNumberHumanizer {
