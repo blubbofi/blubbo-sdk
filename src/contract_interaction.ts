@@ -163,8 +163,8 @@ export class ContractInteraction {
   ): SendTransactionRequest {
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
-        ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN
-        : this.constantsByDeployment.Fee.WITHDRAW.OTHER;
+        ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN.TOTAL
+        : this.constantsByDeployment.Fee.WITHDRAW.OTHER.TOTAL;
 
     const messages: SendTransactionRequest["messages"] = [
       {
@@ -213,8 +213,8 @@ export class ContractInteraction {
   ): SendTransactionRequest {
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
-        ? this.constantsByDeployment.Fee.BORROW.TONCOIN
-        : this.constantsByDeployment.Fee.BORROW.OTHER;
+        ? this.constantsByDeployment.Fee.BORROW.TONCOIN.TOTAL
+        : this.constantsByDeployment.Fee.BORROW.OTHER.TOTAL;
 
     const messages: SendTransactionRequest["messages"] = [
       {
