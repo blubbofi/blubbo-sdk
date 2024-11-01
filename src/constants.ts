@@ -89,12 +89,12 @@ class Fee {
     },
     BORROW: {
       TONCOIN: {
-        TOTAL: toNano("0.17"),
-        EXPECTED_REFUND: toNano(`0.0958`),
+        TOTAL: toNano("0.22"),
+        EXPECTED_REFUND: toNano(`0.143`),
       },
       OTHER: {
-        TOTAL: toNano(`0.17`),
-        EXPECTED_REFUND: toNano(`0.0769`),
+        TOTAL: toNano(`0.22`),
+        EXPECTED_REFUND: toNano(`0.124`),
       },
     },
     REPAY: {
