@@ -181,7 +181,7 @@ export class ContractInteraction {
     ];
 
     return {
-      validUntil: Date.now() + 2 * 60 * 1000, // 2 minutes,
+      validUntil: Date.now() + 30 * 1000, // 30 seconds because of the oracle prices validity expiration,
       messages,
     };
   }
@@ -231,7 +231,7 @@ export class ContractInteraction {
     ];
 
     return {
-      validUntil: Date.now() + 2 * 60 * 1000, // 2 minutes,
+      validUntil: Date.now() + 30 * 1000, // 30 seconds because of the oracle prices validity expiration,
       messages,
     };
   }
