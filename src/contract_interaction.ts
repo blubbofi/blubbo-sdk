@@ -298,7 +298,7 @@ export class ContractInteraction {
       });
 
       messages.push({
-        address: ownerJettonWallet.toString(),
+        address: ownerJettonWallet.address.toString(),
         amount: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendRepayBody({
           ...restArgs,
