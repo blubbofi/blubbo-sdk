@@ -6,13 +6,13 @@ export class RedstoneOracleConstants {
     (dataFeedId) => RedstoneOracleConstants.hexlifyStr(dataFeedId),
   );
   static DATA_SERVICE_ID = "redstone-primary-prod";
-  static UNIQUE_SIGNERS_COUNT = 3;
+  static UNIQUE_SIGNERS_COUNT = 3 as const;
   static GATEWAY_URLS = [
     "https://oracle-gateway-1.a.redstone.finance",
     "https://oracle-gateway-2.a.redstone.finance",
   ];
   static MAX_TIMESTAMP_DEVIATION_MS = 30 * 1000;
-  static REDSTONE_DECIMAL = 1e8;
+  static REDSTONE_DECIMALS = 8 as const;
 
   // Directly copied from https://github.com/evaafi/merkle-oracles/blob/fbe3a92ba82553359815bda43d64f0997665e43a/src/constants.ts#L1
   static PRICE_TTL_MS = 30 * 1000;
