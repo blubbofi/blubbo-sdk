@@ -1,6 +1,9 @@
 import { Address, Cell, Dictionary } from "@ton/core";
 import { Maybe } from "@ton/core/dist/utils/maybe";
 
+/**
+ * On TON, booleans are represented as -1 for true and 0 for false.
+ */
 export const TONBool = Object.freeze({
   TRUE: -1n,
   FALSE: 0n,
@@ -16,44 +19,129 @@ export function isTONBool(
 
 export const TonBoolToBoolean = (value: TONBool) => value === TONBool.TRUE;
 
+/**
+ * In the current deployment, there are only two reserves: TON and USDT.
+ *
+ * This is a reserve ID that is used to identify the reserve.
+ *
+ * Reserve ID 0 is TON and Reserve ID 1 is USDT.
+ */
 export type ReserveId = 0 | 1;
 
 export type ReserveVars0 = {
+  /**
+   * Whether the reserve is enabled or not.
+   * MUST use TONBool to compare (not ordinary boolean operators)
+   */
   enabled: TONBool;
+  /**
+   * The number of decimal places of the reserve.
+   * For example, TON has 9 decimal places.
+   */
   decimals: bigint;
+  /**
+   * The borrow factor of the reserve in percentage.
+   * 0n <= borrow_factor_pct <= 100n
+   */
   borrow_factor_pct: bigint;
+  /**
+   * The collateral factor of the reserve in percentage.
+   * 0n <= collateral_factor_pct <= 100n
+   */
   collateral_factor_pct: bigint;
+  /**
+   * The reserve factor of the reserve in percentage.
+   * 0n <= reserve_factor_pct <= 100n
+   */
   reserve_factor_pct: bigint;
+  /**
+   * The liquidation bonus in percentage that describes how much more
+   * the liquidator receives when liquidating a position.
+   * 0n <= liquidation_bonus_pct <= 100n
+   */
   liquidation_bonus_pct: bigint;
+  /**
+   * The global debt limit of the reserve,
+   * in the unit of the reserve's native amount and decimal places.
+   */
   debt_limit: bigint;
   /**
-   * This is null when the reserve is toncoin
+   * This is null when the reserve is toncoin.
+   * Stores the wallet code of a jetton specific to the reserve.
+   * This is used for calculating the wallet address of the user's jetton wallet.
    */
   jetton_wallet_code: Cell;
 };
 
 export type ReserveVars1 = {
+  /**
+   * The last timestamp when the reserve's accumulators, rates, and totals were updated,
+   * in the unit of seconds.
+   */
   last_update_timestamp: bigint;
+  /**
+   * The lending accumulator of the reserve. i.e. the liquidity index.
+   * In the unit of `ScMath.SCALE`.
+   * @example
+   * 1000000000564234572341374307
+   */
   lending_accumulator: bigint;
+  /**
+   * The borrowing accumulator of the reserve. i.e. the debt index.
+   * In the unit of `ScMath.SCALE`.
+   * @example
+   * 1000000000564234572341374307
+   */
   debt_accumulator: bigint;
+  /**
+   * The current lending rate of the reserve.
+   * In the unit of `ScMath.SCALE`.
+   * @example
+   * 50556930693069306930693069n would mean 5.0556930693069306930693069%
+   */
   current_lending_rate: bigint;
+  /**
+   * The current borrowing rate of the reserve.
+   * In the unit of `ScMath.SCALE`.
+   * @example
+   * 50556930693069306930693069n would mean 5.0556930693069306930693069%
+   */
   current_borrowing_rate: bigint;
   total_raw_amount_to_treasury: bigint;
 };
 
 export type ReserveVars2 = {
+  /**
+   * The total raw available liquidity of the reserve, without
+   * considering the accumulators.
+   */
   total_raw_available: bigint;
+  /**
+   * The total raw debt of the reserve, without considering the accumulators.
+   */
   total_raw_debt: bigint;
 };
 
 export type ReserveVars3 = {
+  /**
+   * 0 <= slope0_pct <= 100
+   */
   slope0_pct: bigint;
+  /**
+   * 0 <= slope1_pct <= 100
+   */
   slope1_pct: bigint;
+  /**
+   * 0 <= y_intercept
+   */
   y_intercept: bigint;
+  /**
+   * 0 <= optimal_rate_pct <= 100
+   */
   optimal_rate_pct: bigint;
 };
 
-export type BeachReserveStorage = {
+export type BlubboReserveStorage = {
   reserve_vars_0: Cell;
   reserve_vars_1: Cell;
   reserve_vars_2: Cell;
@@ -225,19 +313,32 @@ export type WithOwnerAddress<T> = {
   owner_address: Address;
 } & T;
 
-export type BeachUserVars0 = {
+export type BlubboUserVars0 = {
+  /**
+   * The address of the user's wallet to which the Blubbo user contract belongs.
+   */
   owner_address: Address;
-  beach_master_address: Address;
-  // Null means empty dictionary
+  /**
+   * The deployed address of the Blubbo master contract.
+   */
+  blubbo_master_address: Address;
+  /**
+   * A dictionary that maps the reserve ID to the raw amount of jetton deposited.
+   */
   raw_deposit_per_jetton_dict: null | Dictionary<bigint, Cell>;
-  // Null means empty dictionary
+  /**
+   * A dictionary that maps the reserve ID to the raw amount of jetton borrowed.
+   */
   raw_debt_per_jetton_dict: null | Dictionary<bigint, Cell>;
-  beach_user_code: Cell;
+  /**
+   * The code of the Blubbo user contract.
+   */
+  blubbo_user_code: Cell;
   // Unused for now (always set as null)
   additionalData: Maybe<Cell>;
 };
 
-export type BeachUserVars1 = {
+export type BlubboUserVars1 = {
   tx_locks: Cell;
 };
 
@@ -253,11 +354,20 @@ export type TxLocks = {
 };
 
 export type CollateralData = {
+  /**
+   * The amount of the collateral in an 8-decimals long integer,
+   * discounted by collateral factor.
+   */
   total_discounted_face_deposit: bigint;
+  /**
+   * The amount of collaterals needed to back a user's debt in
+   * an 8-decimals long integer, exaggerated by borrow factor (if specified in an option).
+   */
   total_collateral_required: bigint;
 };
 
 /**
+ * Data that is sent to Blubbo user contract to calculate `CollateralData`.
  * @example
  * ```
    decimals: 9n,

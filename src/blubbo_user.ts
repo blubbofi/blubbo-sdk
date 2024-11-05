@@ -7,8 +7,8 @@ import {
   Dictionary,
 } from "@ton/core";
 import {
-  BeachUserVars0,
-  BeachUserVars1,
+  BlubboUserVars0,
+  BlubboUserVars1,
   TxLocks,
   CollateralData,
   ReserveId,
@@ -16,20 +16,20 @@ import {
 } from "./types";
 import { HumanBoolean, Humanizer } from "./humanizer";
 
-export class BeachUser implements Contract {
+export class BlubboUser implements Contract {
   constructor(
     readonly address: Address,
     readonly init?: { code: Cell; data: Cell },
   ) {}
 
   static createFromAddress(address: Address) {
-    return new BeachUser(address);
+    return new BlubboUser(address);
   }
 
-  static unpackUserVars0(cell: Cell): BeachUserVars0 {
+  static unpackUserVars0(cell: Cell): BlubboUserVars0 {
     const slice = cell.asSlice();
     const owner_address = slice.loadAddress();
-    const beach_master_address = slice.loadAddress();
+    const blubbo_master_address = slice.loadAddress();
     // Dictionaries = maybe refs in binary terms
     const raw_deposit_per_jetton_dict = slice.loadDict(
       Dictionary.Keys.BigUint(6),
@@ -39,24 +39,24 @@ export class BeachUser implements Contract {
       Dictionary.Keys.BigUint(6),
       Dictionary.Values.Cell(),
     );
-    const beach_user_code = slice.loadRef();
+    const blubbo_user_code = slice.loadRef();
     const additionalData = slice.loadMaybeRef();
     slice.endParse();
 
     return {
       owner_address,
-      beach_master_address,
+      blubbo_master_address,
       raw_deposit_per_jetton_dict,
       raw_debt_per_jetton_dict,
-      beach_user_code,
+      blubbo_user_code,
       additionalData,
     };
   }
 
-  static packUserVars0(userVars0: BeachUserVars0): Cell {
+  static packUserVars0(userVars0: BlubboUserVars0): Cell {
     return beginCell()
       .storeAddress(userVars0.owner_address)
-      .storeAddress(userVars0.beach_master_address)
+      .storeAddress(userVars0.blubbo_master_address)
       .storeDict(
         userVars0.raw_deposit_per_jetton_dict,
         Dictionary.Keys.BigUint(6),
@@ -67,12 +67,12 @@ export class BeachUser implements Contract {
         Dictionary.Keys.BigUint(6),
         Dictionary.Values.Cell(),
       )
-      .storeRef(userVars0.beach_user_code)
+      .storeRef(userVars0.blubbo_user_code)
       .storeMaybeRef(userVars0.additionalData)
       .endCell();
   }
 
-  static unpackuserVars1(cell: Cell): BeachUserVars1 {
+  static unpackuserVars1(cell: Cell): BlubboUserVars1 {
     const slice = cell.asSlice();
     const tx_locks = slice.loadRef();
     slice.endParse();
@@ -82,7 +82,7 @@ export class BeachUser implements Contract {
     };
   }
 
-  static packUserVars1(userVars1: BeachUserVars1): Cell {
+  static packUserVars1(userVars1: BlubboUserVars1): Cell {
     return beginCell().storeRef(userVars1.tx_locks).endCell();
   }
 
@@ -172,7 +172,7 @@ export class BeachUser implements Contract {
 
       variables_per_reserve_dict.set(
         rId,
-        BeachUser.packVariablePerReserve(variable_per_reserve),
+        BlubboUser.packVariablePerReserve(variable_per_reserve),
       );
     }
 
@@ -249,7 +249,7 @@ export class BeachUser implements Contract {
         // Don't know how to send dictionary as a cell, so just wrap it in a cell
         cell: beginCell()
           .storeDict(
-            BeachUser.packVariablesPerReserveDict(variables_per_reserve),
+            BlubboUser.packVariablesPerReserveDict(variables_per_reserve),
           )
           .endCell(),
       },

@@ -1,14 +1,28 @@
 import { ScMath } from "./math";
 import { ReserveVars3 } from "./types";
 
+/**
+ * Off-chain representation of the default interest rate model used in the protocol.
+ */
 export class Dirm {
+  /**
+   * Calculates the utilization rate in the unit of `ScMath.SCALE`.
+   * `ScMath.SCALE` = 100%.
+   * @example
+   * const totalAvailable = 100n;
+   * const totalDebt = 50n;
+   * // total available = 100 + 50 = 150
+   * // total debt / total liquidity = 50 / 150 = 1/3
+   * const utilizationRate = Dirm.calculate_utilization_rate(totalAvailable, totalDebt);
+   * console.log(utilizationRate) // 333333333333333333333333333n
+   */
   static calculate_utilization_rate(
-    face_value_total_deposit: bigint,
+    face_value_total_available: bigint,
     face_value_total_debt: bigint,
   ) {
-    const face_value_total_deposit_uint256 = BigInt.asUintN(
+    const face_value_total_available_uint256 = BigInt.asUintN(
       256,
-      face_value_total_deposit,
+      face_value_total_available,
     );
     const face_value_total_debt_uint256 = BigInt.asUintN(
       256,
@@ -18,7 +32,7 @@ export class Dirm {
       return 0n;
     } else {
       const total_liquidity = ScMath.uint_add(
-        face_value_total_deposit_uint256,
+        face_value_total_available_uint256,
         face_value_total_debt_uint256,
       );
       const utilization_rate = ScMath.uint_div(
@@ -29,6 +43,11 @@ export class Dirm {
     }
   }
 
+  /**
+   * For optimization purposes, the contract stores the interest rate model as 8-bits-long integers instead of storing them as 256-bits-long integers. This function scales the numbers to 256-bits-long integers.
+   * @param reserve_vars_3 ReserveVars3 from the contract storage.
+   * @returns the scaled numbers of the interest rate model.
+   */
   static get_interest_rate_model_scaled(reserve_vars_3: ReserveVars3) {
     const { slope0_pct, slope1_pct, y_intercept, optimal_rate_pct } =
       reserve_vars_3;
@@ -45,6 +64,12 @@ export class Dirm {
     };
   }
 
+  /**
+   *
+   * @param reserve_vars_3 ReserveVars3 from the contract storage.
+   * @param utilization_rate The calculated utilization rate from `calculate_utilization_rate`.
+   * @returns The borrowing rate in the unit of `ScMath.SCALE`.
+   */
   static calculate_borrow_rate(
     reserve_vars_3: ReserveVars3,
     utilization_rate: bigint,
@@ -76,21 +101,27 @@ export class Dirm {
     }
   }
 
+  /**
+   * @param reserve_vars_3 ReserveVars3 from the contract storage.
+   * @param face_value_total_available The available liquidity in the reserve.
+   * @param face_value_total_debt The total debt in the reserve.
+   * @returns The lending rate and borrowing rate in 128-bits-long integers.
+   */
   static get_interest_rates(
     reserve_vars_3: ReserveVars3,
-    face_value_total_deposit: bigint,
+    face_value_total_available: bigint,
     face_value_total_debt: bigint,
   ) {
-    const face_value_total_deposit_uint256 = BigInt.asUintN(
+    const face_value_total_available_uint256 = BigInt.asUintN(
       256,
-      face_value_total_deposit,
+      face_value_total_available,
     );
     const face_value_total_debt_uint256 = BigInt.asUintN(
       256,
       face_value_total_debt,
     );
     const utilization_rate = this.calculate_utilization_rate(
-      face_value_total_deposit_uint256,
+      face_value_total_available_uint256,
       face_value_total_debt_uint256,
     );
 
@@ -102,11 +133,11 @@ export class Dirm {
         utilization_rate,
       );
       const lending_rate = ScMath.uint_mul(borrowing_rate, utilization_rate);
-      const borrowing_rate_uint8 = BigInt.asUintN(128, borrowing_rate);
-      const lending_rate_uint8 = BigInt.asUintN(128, lending_rate);
+      const borrowing_rate_uint_128 = BigInt.asUintN(128, borrowing_rate);
+      const lending_rate_uint_128 = BigInt.asUintN(128, lending_rate);
       return {
-        lending_rate: lending_rate_uint8,
-        borrowing_rate: borrowing_rate_uint8,
+        lending_rate: lending_rate_uint_128,
+        borrowing_rate: borrowing_rate_uint_128,
       };
     }
   }

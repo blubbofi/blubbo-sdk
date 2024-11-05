@@ -8,7 +8,7 @@ import {
   SendMode,
 } from "@ton/core";
 import {
-  BeachReserveStorage,
+  BlubboReserveStorage,
   isTONBool,
   ReserveVars0,
   ReserveVars1,
@@ -20,17 +20,47 @@ import {
 } from "./types";
 import { Opcode } from "./constants";
 
-export class BeachMaster implements Contract {
+export class BlubboMaster implements Contract {
   constructor(
     readonly address: Address,
     readonly init?: { code: Cell; data: Cell },
   ) {}
 
+  /**
+   * @example
+   * ```
+   * const masterAddr = Address.parse(`0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef`);
+   * const master = BlubboMaster.createFromAddress(masterAddr);
+   * ```
+   *
+   * @param address The on-chain address of the BlubboMaster contract
+   * @returns A new instance of BlubboMaster class
+   */
   static createFromAddress(address: Address) {
-    return new BeachMaster(address);
+    return new BlubboMaster(address);
   }
 
-  static unpackReserve(cell: Cell): BeachReserveStorage {
+  /**
+   * @example
+   * ```
+   * const tonClient = new TonClient({
+   *  endpoint: `https://toncenter.com/api/v2/jsonRPC`,
+   *  apiKey: TONCENTER_APIKEY,
+   * });
+   * const masterAddr = Address.parse(`0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef`);
+   * const master = tonClient.open(BlubboMaster.createFromAddress(masterAddr));
+   * const tonReserve = master.getReserve(0n);
+   * const { reserve_vars_0, reserve_vars_1, reserve_vars_2, reserve_vars_3 } = BlubboMaster.unpackReserve(tonReserve);
+   * ```
+   *
+   * @description
+   * Unpacks the first level of the BlubboMaster contract storage. There's no specific meaning in
+   * separating the storage into 4 parts - it's just a way to optimize the storage layout.
+   *
+   * BlubboMaster contract storage contains useful information about the protocol. Refer to
+   * `ReserveVars0`, `ReserveVars1`, `ReserveVars2`, `ReserveVars3` types.
+   */
+  static unpackReserve(cell: Cell): BlubboReserveStorage {
     const slice = cell.beginParse();
     const reserve_vars_0 = slice.loadRef();
     const reserve_vars_1 = slice.loadRef();
@@ -46,18 +76,37 @@ export class BeachMaster implements Contract {
     };
   }
 
-  static fullyUnpackReserve(beachReserveStorage: BeachReserveStorage) {
-    const reserve_vars_0 = BeachMaster.unpackReserveVars0(
-      beachReserveStorage.reserve_vars_0,
+  /**
+   *
+   * @param blubboReserveStorage first level of the BlubboMaster contract storage unpacked by `BlubboMaster.unpackReserve`
+   * @returns The fully unpacked BlubboMaster contract storage at the second level
+   * @example
+   * ```
+   * const tonClient = new TonClient({
+   *  endpoint: `https://toncenter.com/api/v2/jsonRPC`,
+   *  apiKey: TONCENTER_APIKEY,
+   * });
+   * const masterAddr = Address.parse(`0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef`);
+   * const master = tonClient.open(BlubboMaster.createFromAddress(masterAddr));
+   * const blubboReserveStorage = master.getReserve(0n);
+   * const { reserve_vars_0, reserve_vars_1, reserve_vars_2, reserve_vars_3 } = master.fullyUnpackReserve(blubboReserveStorage);
+   *
+   * // Use the unpacked variables
+   * console.log(reserve_vars_0.enabled)
+   * ```
+   */
+  static fullyUnpackReserve(blubboReserveStorage: BlubboReserveStorage) {
+    const reserve_vars_0 = BlubboMaster.unpackReserveVars0(
+      blubboReserveStorage.reserve_vars_0,
     );
-    const reserve_vars_1 = BeachMaster.unpackReserveVars1(
-      beachReserveStorage.reserve_vars_1,
+    const reserve_vars_1 = BlubboMaster.unpackReserveVars1(
+      blubboReserveStorage.reserve_vars_1,
     );
-    const reserve_vars_2 = BeachMaster.unpackReserveVars2(
-      beachReserveStorage.reserve_vars_2,
+    const reserve_vars_2 = BlubboMaster.unpackReserveVars2(
+      blubboReserveStorage.reserve_vars_2,
     );
-    const reserve_vars_3 = BeachMaster.unpackReserveVars3(
-      beachReserveStorage.reserve_vars_3,
+    const reserve_vars_3 = BlubboMaster.unpackReserveVars3(
+      blubboReserveStorage.reserve_vars_3,
     );
 
     return {
@@ -68,6 +117,9 @@ export class BeachMaster implements Contract {
     };
   }
 
+  /**
+   * Unpacks reserve_vars_0 stored in BlubboMaster contract storage.
+   */
   static unpackReserveVars0(cell: Cell): ReserveVars0 {
     const slice = cell.beginParse();
     const enabled = slice.loadIntBig(2);
@@ -144,6 +196,27 @@ export class BeachMaster implements Contract {
     };
   }
 
+  /**
+   * @description A _reserve_ is a term that is used to denote 'asset' or 'jetton' supported on the protocol.
+   * The reserve variables would contain various pieces of information about that reserve,
+   * such as `enabled`, `decimals`, `borrow_factor_pct`, ... and so on.
+   * @param reserve_id_6
+   * @returns the first level of the BlubboMaster contract storage that contains the reserve information
+   * @example
+   * ```
+   * const tonClient = new TonClient({
+   *  endpoint: `https://toncenter.com/api/v2/jsonRPC`,
+   *  apiKey: TONCENTER_APIKEY,
+   * });
+   * const masterAddr = Address.parse(`0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef`);
+   * const master = tonClient.open(BlubboMaster.createFromAddress(masterAddr));
+   * const blubboReserveStorage = master.getReserve(0n);
+   * const { reserve_vars_0, reserve_vars_1, reserve_vars_2, reserve_vars_3 } = master.fullyUnpackReserve(blubboReserveStorage);
+   *
+   * // Use the unpacked variables
+   * console.log(reserve_vars_0.enabled)
+   * ```
+   */
   async getReserve(provider: ContractProvider, reserve_id_6: bigint) {
     const res = await provider.get("fetch_reserve", [
       {
@@ -155,6 +228,19 @@ export class BeachMaster implements Contract {
     return reserve_storage;
   }
 
+  /**
+   * @description gets the version of the smart contract.
+   * @example
+   * ```
+   * const tonClient = new TonClient({
+   *  endpoint: `https://toncenter.com/api/v2/jsonRPC`,
+   *  apiKey: TONCENTER_APIKEY,
+   * });
+   * const masterAddr = Address.parse(`0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef`);
+   * const master = tonClient.open(BlubboMaster.createFromAddress(masterAddr));
+   * const version = master.getVersion();
+   * ```
+   */
   async getVersion(provider: ContractProvider) {
     const res = await provider.get("fetch_version", []);
     const version = res.stack.readBigNumber();
@@ -189,23 +275,28 @@ export class BeachMaster implements Contract {
     return version;
   }
 
-  async getBeachUserAddress(
+  /**
+   * Each user in Blubbo has a unique smart contract that represents their position.
+   * This function calculates the address of the Blubbo user smart contract.
+   */
+  async getBlubboUserAddress(
     provider: ContractProvider,
     userWalletAddress: Address,
   ) {
+    // TODO: change to `fetch_blubbo_user_address` once the rebranding is done
     const res = await provider.get("fetch_beach_user_address", [
       {
         type: `slice`,
         cell: beginCell().storeAddress(userWalletAddress).endCell(),
       },
     ]);
-    const beachUserAddress = res.stack.readAddress();
-    return beachUserAddress;
+    const blubboUserAddress = res.stack.readAddress();
+    return blubboUserAddress;
   }
 
   static createSendWithdrawBody(args: SendWithdrawArgs) {
     return beginCell()
-      .storeUint(Opcode.WITHDRAW_FROM_WALLET_TO_BEACH_MASTER, 32)
+      .storeUint(Opcode.WITHDRAW_FROM_WALLET_TO_BLUBBO_MASTER, 32)
       .storeCoins(args.face_amount)
       .storeUint(args.reserve_id_6, 6)
       .storeRef(args.redstoneData)
@@ -222,13 +313,13 @@ export class BeachMaster implements Contract {
     await provider.internal(via, {
       value: args.gas,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
-      body: BeachMaster.createSendWithdrawBody(args),
+      body: BlubboMaster.createSendWithdrawBody(args),
     });
   }
 
   static createSendBorrowBody(args: SendBorrowArgs) {
     return beginCell()
-      .storeUint(Opcode.BORROW_FROM_WALLET_TO_BEACH_MASETER, 32)
+      .storeUint(Opcode.BORROW_FROM_WALLET_TO_BLUBBO_MASETER, 32)
       .storeCoins(args.face_amount)
       .storeUint(args.reserve_id_6, 6)
       .storeRef(args.redstoneData)
@@ -245,7 +336,7 @@ export class BeachMaster implements Contract {
     await provider.internal(via, {
       value: args.gas,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
-      body: BeachMaster.createSendBorrowBody(args),
+      body: BlubboMaster.createSendBorrowBody(args),
     });
   }
 }
