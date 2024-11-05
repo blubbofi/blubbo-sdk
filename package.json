@@ -7,7 +7,7 @@
   "files": [
     "build"
   ],
-  "repository": "https://github.com/blubbofi/sdk.git",
+  "repository": "https://github.com/blubbofi/blubbo-sdk.git",
   "scripts": {
     "build:tsc": "tsc",
     "build:dev": "tsc",
