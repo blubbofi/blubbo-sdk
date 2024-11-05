@@ -1,5 +1,5 @@
 import { Address, Cell, OpenedContract, Sender, toNano } from "@ton/core";
-import { BeachMaster } from "./beach_master";
+import { BlubboMaster } from "./blubbo_master";
 import { Sotw } from "./sotw";
 import {
   ContractInteractionBorrowArgs,
@@ -21,7 +21,7 @@ import {
 } from "./jetton";
 
 export class ContractInteraction {
-  beachMaster: OpenedContract<BeachMaster>;
+  blubboMaster: OpenedContract<BlubboMaster>;
   sotw: OpenedContract<Sotw>;
   client: TonClient;
   constantsByDeployment: ConstantsByDeployment;
@@ -29,14 +29,14 @@ export class ContractInteraction {
   constructor(args: {
     client: TonClient;
     addressBook: {
-      beachMaster: Address;
+      blubboMaster: Address;
       sotw: Address;
     };
     constantsByDeployment: ConstantsByDeployment;
   }) {
     this.client = args.client;
-    this.beachMaster = this.client.open(
-      new BeachMaster(args.addressBook.beachMaster),
+    this.blubboMaster = this.client.open(
+      new BlubboMaster(args.addressBook.blubboMaster),
     );
     this.sotw = this.client.open(new Sotw(args.addressBook.sotw));
     this.constantsByDeployment = args.constantsByDeployment;
@@ -94,7 +94,7 @@ export class ContractInteraction {
         amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendDepositBody({
           ...args,
-          to: this.beachMaster.address,
+          to: this.blubboMaster.address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
         })
@@ -144,7 +144,7 @@ export class ContractInteraction {
 
     return ownerJettonWallet.sendDeposit(sender, {
       ...restArgs,
-      to: this.beachMaster.address,
+      to: this.blubboMaster.address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
     });
@@ -168,9 +168,9 @@ export class ContractInteraction {
 
     const messages: SendTransactionRequest["messages"] = [
       {
-        address: this.beachMaster.address.toString(),
+        address: this.blubboMaster.address.toString(),
         amount: gas.toString(),
-        payload: BeachMaster.createSendWithdrawBody({
+        payload: BlubboMaster.createSendWithdrawBody({
           ...args,
           configPayload: this.constantsByDeployment.Config.PAYLOAD,
           configSignature: this.constantsByDeployment.Config.SIGNATURE,
@@ -192,7 +192,7 @@ export class ContractInteraction {
         ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN.TOTAL
         : this.constantsByDeployment.Fee.WITHDRAW.OTHER.TOTAL;
 
-    return this.beachMaster.sendWithdraw(sender, {
+    return this.blubboMaster.sendWithdraw(sender, {
       ...args,
       gas,
       configPayload: this.constantsByDeployment.Config.PAYLOAD,
@@ -218,9 +218,9 @@ export class ContractInteraction {
 
     const messages: SendTransactionRequest["messages"] = [
       {
-        address: this.beachMaster.address.toString(),
+        address: this.blubboMaster.address.toString(),
         amount: gas.toString(),
-        payload: BeachMaster.createSendBorrowBody({
+        payload: BlubboMaster.createSendBorrowBody({
           ...args,
           configPayload: this.constantsByDeployment.Config.PAYLOAD,
           configSignature: this.constantsByDeployment.Config.SIGNATURE,
@@ -242,7 +242,7 @@ export class ContractInteraction {
         ? this.constantsByDeployment.Fee.BORROW.TONCOIN.TOTAL
         : this.constantsByDeployment.Fee.BORROW.OTHER.TOTAL;
 
-    return this.beachMaster.sendBorrow(sender, {
+    return this.blubboMaster.sendBorrow(sender, {
       ...args,
       gas,
       configPayload: this.constantsByDeployment.Config.PAYLOAD,
@@ -302,7 +302,7 @@ export class ContractInteraction {
         amount: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendRepayBody({
           ...restArgs,
-          to: this.beachMaster.address,
+          to: this.blubboMaster.address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
         })
@@ -351,7 +351,7 @@ export class ContractInteraction {
 
     return ownerJettonWallet.sendRepay(sender, {
       ...restArgs,
-      to: this.beachMaster.address,
+      to: this.blubboMaster.address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
     });

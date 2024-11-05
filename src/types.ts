@@ -53,7 +53,7 @@ export type ReserveVars3 = {
   optimal_rate_pct: bigint;
 };
 
-export type BeachReserveStorage = {
+export type BlubboReserveStorage = {
   reserve_vars_0: Cell;
   reserve_vars_1: Cell;
   reserve_vars_2: Cell;
@@ -225,19 +225,19 @@ export type WithOwnerAddress<T> = {
   owner_address: Address;
 } & T;
 
-export type BeachUserVars0 = {
+export type BlubboUserVars0 = {
   owner_address: Address;
-  beach_master_address: Address;
+  blubbo_master_address: Address;
   // Null means empty dictionary
   raw_deposit_per_jetton_dict: null | Dictionary<bigint, Cell>;
   // Null means empty dictionary
   raw_debt_per_jetton_dict: null | Dictionary<bigint, Cell>;
-  beach_user_code: Cell;
+  blubbo_user_code: Cell;
   // Unused for now (always set as null)
   additionalData: Maybe<Cell>;
 };
 
-export type BeachUserVars1 = {
+export type BlubboUserVars1 = {
   tx_locks: Cell;
 };
 

@@ -6,8 +6,8 @@ import {
   ConstantsByDeployment,
   ContractInteraction,
   getStandardJettonWalletForAddress,
-  BeachUserUtils,
-  BeachMaster,
+  BlubboUserUtils,
+  BlubboMaster,
 } from "../src/index";
 import { Address, TonClient } from "@ton/ton";
 
@@ -28,15 +28,15 @@ describe("Smoke tests", () => {
     const contractInteraction = new ContractInteraction({
       client,
       addressBook: {
-        beachMaster:
+        blubboMaster:
           ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook
-            .BEACH_MASTER,
+            .BLUBBO_MASTER,
         sotw: ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook.SOTW,
       },
       constantsByDeployment: ConstantsByDeployment.testnet_2024_10_22_847a54a,
     });
     try {
-      await contractInteraction.beachMaster.getReserve(
+      await contractInteraction.blubboMaster.getReserve(
         BigInt(
           ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.bySymbol.TON
             .id,
@@ -77,16 +77,16 @@ describe("Smoke tests", () => {
     ).toBe(true);
   });
 
-  it(`should give beach user address testnet_2024_10_25_687c2cb`, async () => {
+  it(`should give blubbo user address testnet_2024_10_25_687c2cb`, async () => {
     const ownerAddress = Address.parse(
       `EQC0yj5mT3jND5VWPCpAC_nqErRMtXyurNO291J4PcWjmi1I`,
     );
     const calculatedAddress =
-      BeachUserUtils.testnet_2024_10_25_687c2cb.calculateUserBeachUserAddress(
+      BlubboUserUtils.testnet_2024_10_25_687c2cb.calculateUserBlubboUserAddress(
         ownerAddress,
         ConstantsByDeployment.testnet_2024_10_25_687c2cb.AddressBook
-          .BEACH_MASTER,
-        ConstantsByDeployment.testnet_2024_10_25_687c2cb.Config.BEACH_USER,
+          .BLUBBO_MASTER,
+        ConstantsByDeployment.testnet_2024_10_25_687c2cb.Config.BLUBBO_USER,
       );
 
     const client = new TonClient({
@@ -94,12 +94,12 @@ describe("Smoke tests", () => {
       apiKey: TONCENTER_API_KEY,
     });
     const bm = client.open(
-      BeachMaster.createFromAddress(
+      BlubboMaster.createFromAddress(
         ConstantsByDeployment.testnet_2024_10_25_687c2cb.AddressBook
-          .BEACH_MASTER,
+          .BLUBBO_MASTER,
       ),
     );
-    const answerfromBlockchain = await bm.getBeachUserAddress(ownerAddress);
+    const answerfromBlockchain = await bm.getBlubboUserAddress(ownerAddress);
 
     expect(calculatedAddress.equals(answerfromBlockchain)).toBe(true);
   });

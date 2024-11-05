@@ -29,6 +29,14 @@ type GetPendingTreasuryAmountArgs = {
 };
 
 export class Accumulators {
+  /**
+   * Calculates the latest lending accumulator. The lending accumulator is also called the 'liquidity index' in other
+   * lending protocols. The lending accumulator stored on-chain is always not up to date, because it is updated
+   * at last when a user interacts with the protocol. This function calculates the latest lending accumulator
+   * based on the current lending rate and `args.block_timestamp`.
+   * 
+   * `reserve_vars_0` and `reserve_vars_1` need to be retrieved by calling `getReserve`.
+   */
   static getLendingAccumulator(args: GetLendingAccumulatorArgs): bigint {
     const reserve_factor_pct_scaled = ScMath.uint_scale_pct(
       args.reserve_vars_0.reserve_factor_pct,
@@ -58,6 +66,14 @@ export class Accumulators {
     }
   }
 
+  /**
+   * Calculates the latest debt accumulator. The debt accumulator is also called the 'liquidity index' in other
+   * lending protocols. The debt accumulator stored on-chain is always not up to date, because it is updated
+   * at last when a user interacts with the protocol. This function calculates the latest debt accumulator
+   * based on the current borrowing rate and `args.block_timestamp`.
+   * 
+   * `reserve_vars_1` need to be retrieved by calling `getReserve`.
+   */
   static getDebtAccumulator(args: GetDebtAccumulatorArgs): bigint {
     const { last_update_timestamp, debt_accumulator, current_borrowing_rate } =
       args.reserve_vars_1;
