@@ -20,6 +20,24 @@ import {
   JettonWallet,
 } from "./jetton";
 
+/**
+ * This class bridges the developer with the contract.
+ * @example
+ * ```
+ * export const tonClient = new TonClient({
+ *  endpoint: `https://testnet.toncenter.com/api/v2/jsonRPC`,
+ *  apiKey: TONCENTER_APIKEY,
+ * });
+ * const contractInteraction = new ContractInteraction({
+ *   client: tonClient,
+ *   addressBook: {
+ *     beachMaster: ConstantsByDeployment.testnet_2024_11_01_7513aa7.AddressBook.BEACH_MASTER,
+ *     sotw: ConstantsByDeployment.testnet_2024_11_01_7513aa7.AddressBook.SOTW,
+ *   },
+ *   constantsByDeployment: ConstantsByDeployment.testnet_2024_11_01_7513aa7,
+ * });
+ * ```
+ */
 export class ContractInteraction {
   blubboMaster: OpenedContract<BlubboMaster>;
   sotw: OpenedContract<Sotw>;
@@ -109,6 +127,9 @@ export class ContractInteraction {
     };
   }
 
+  /**
+   * To be used environments where tonConnectUI is not available (for example, node.js).
+   */
   public async deposit(
     sender: Sender,
     args: WithOwnerAddress<ContractInteractionDepositArgs>,
