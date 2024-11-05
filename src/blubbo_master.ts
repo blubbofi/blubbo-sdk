@@ -32,7 +32,7 @@ export class BlubboMaster implements Contract {
    * const masterAddr = Address.parse(`0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef`);
    * const master = BlubboMaster.createFromAddress(masterAddr);
    * ```
-   * 
+   *
    * @param address The on-chain address of the BlubboMaster contract
    * @returns A new instance of BlubboMaster class
    */
@@ -52,12 +52,12 @@ export class BlubboMaster implements Contract {
    * const tonReserve = master.getReserve(0n);
    * const { reserve_vars_0, reserve_vars_1, reserve_vars_2, reserve_vars_3 } = BlubboMaster.unpackReserve(tonReserve);
    * ```
-   * 
+   *
    * @description
-   * Unpacks the first level of the BlubboMaster contract storage. There's no specific meaning in 
+   * Unpacks the first level of the BlubboMaster contract storage. There's no specific meaning in
    * separating the storage into 4 parts - it's just a way to optimize the storage layout.
-   * 
-   * BlubboMaster contract storage contains useful information about the protocol. Refer to 
+   *
+   * BlubboMaster contract storage contains useful information about the protocol. Refer to
    * `ReserveVars0`, `ReserveVars1`, `ReserveVars2`, `ReserveVars3` types.
    */
   static unpackReserve(cell: Cell): BlubboReserveStorage {
@@ -77,7 +77,7 @@ export class BlubboMaster implements Contract {
   }
 
   /**
-   * 
+   *
    * @param blubboReserveStorage first level of the BlubboMaster contract storage unpacked by `BlubboMaster.unpackReserve`
    * @returns The fully unpacked BlubboMaster contract storage at the second level
    * @example
@@ -90,7 +90,7 @@ export class BlubboMaster implements Contract {
    * const master = tonClient.open(BlubboMaster.createFromAddress(masterAddr));
    * const blubboReserveStorage = master.getReserve(0n);
    * const { reserve_vars_0, reserve_vars_1, reserve_vars_2, reserve_vars_3 } = master.fullyUnpackReserve(blubboReserveStorage);
-   * 
+   *
    * // Use the unpacked variables
    * console.log(reserve_vars_0.enabled)
    * ```
@@ -197,10 +197,10 @@ export class BlubboMaster implements Contract {
   }
 
   /**
-   * @description A _reserve_ is a term that is used to denote 'asset' or 'jetton' supported on the protocol. 
-   * The reserve variables would contain various pieces of information about that reserve, 
+   * @description A _reserve_ is a term that is used to denote 'asset' or 'jetton' supported on the protocol.
+   * The reserve variables would contain various pieces of information about that reserve,
    * such as `enabled`, `decimals`, `borrow_factor_pct`, ... and so on.
-   * @param reserve_id_6 
+   * @param reserve_id_6
    * @returns the first level of the BlubboMaster contract storage that contains the reserve information
    * @example
    * ```
@@ -212,7 +212,7 @@ export class BlubboMaster implements Contract {
    * const master = tonClient.open(BlubboMaster.createFromAddress(masterAddr));
    * const blubboReserveStorage = master.getReserve(0n);
    * const { reserve_vars_0, reserve_vars_1, reserve_vars_2, reserve_vars_3 } = master.fullyUnpackReserve(blubboReserveStorage);
-   * 
+   *
    * // Use the unpacked variables
    * console.log(reserve_vars_0.enabled)
    * ```

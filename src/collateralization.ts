@@ -1,31 +1,71 @@
 export type CollateralInfo = {
+  /**
+   * an integer representing the native amount.
+   * @example if an asset has 9 decimals and the amount is 1.23, this should be 1230000000n
+   */
   nativeAmount: bigint;
+  /**
+   * an integer representing the number of decimals of the native amount.
+   * @example if an asset has 9 decimals, this should be 9n
+   */
+  nativeDecimals: bigint;
+  /**
+   * The collateral factor of a reserve in percentage.
+   * @description should be 0n <= collateralFactorPct <= 100n
+   */
   collateralFactorPct: bigint;
+  /**
+   * an integer representing the price with 8 decimals.
+   * @example 1.23 => 123000000n
+   */
   price8Decimals: bigint;
 };
 
 export type DebtInfo = {
+  /**
+   * an integer representing the native amount.
+   * @example if an asset has 9 decimals and the amount is 1.23, this should be 1230000000n
+   */
   nativeAmount: bigint;
   /**
+   * an integer representing the number of decimals of the native amount.
+   * @example if an asset has 9 decimals, this should be 9n
+   */
+  nativeDecimals: bigint;
+  /**
+   * The borrow factor of a reserve in percentage.
    * zero if you don't want to apply borrow factor
+   * @description should be 0n <= borrowFactorPct <= 100n
    */
   borrowFactorPct: bigint;
+  /**
+   * an integer representing the price with 8 decimals.
+   * @example 1.23 => 123000000n
+   */
   price8Decimals: bigint;
 };
 
+/**
+ * @warning DO NOT use this class yet, it's not ready yet.
+ * It needs unit tests.
+ */
 export class Collateralization {
   discountedCollateralUsd = 0n;
   debtUsd = 0n;
 
+  /**
+   * TODO: support assets of different decimal places
+   */
   calcCollateral({
     nativeAmount,
+    nativeDecimals,
     collateralFactorPct,
     price8Decimals,
   }: CollateralInfo) {
     // face_deposit_a = 100_000000000n (100 A)
     // usd_face_deposit_a = ((100_000000000n * medianPricesArr[0]) / 10n**9n)
     // discounted_usd_face_deposit_a = ((usd_face_deposit_a) * (50n * 1000000000000000000000000000n / 100n)) / 1000000000000000000000000000n
-    const usdAmount = (nativeAmount * price8Decimals) / 10n ** 9n;
+    const usdAmount = (nativeAmount * price8Decimals) / 10n ** nativeDecimals;
 
     const discountedUsdAmount =
       (usdAmount * ((collateralFactorPct * 10n ** 27n) / 100n)) / 10n ** 27n;
@@ -35,11 +75,13 @@ export class Collateralization {
 
   addCollateral({
     nativeAmount,
+    nativeDecimals,
     collateralFactorPct,
     price8Decimals,
   }: CollateralInfo) {
     const discountedUsdAmount = this.calcCollateral({
       nativeAmount,
+      nativeDecimals,
       collateralFactorPct,
       price8Decimals,
     });
@@ -49,11 +91,16 @@ export class Collateralization {
     return discountedUsdAmount;
   }
 
-  calcDebt({ nativeAmount, borrowFactorPct, price8Decimals }: DebtInfo) {
+  calcDebt({
+    nativeAmount,
+    nativeDecimals,
+    borrowFactorPct,
+    price8Decimals,
+  }: DebtInfo) {
     // face_debt_b = whatever
     // usd_face_debt_b = ((face_debt_b * medianPricesArr[1]) / 10n**9n)
     // exaggerated_usd_face_debt_b = ((usd_face_debt_b * 1000000000000000000000000000n) / (90n * 1000000000000000000000000000n / 100n))
-    const usdAmount = (nativeAmount * price8Decimals) / 10n ** 9n;
+    const usdAmount = (nativeAmount * price8Decimals) / 10n ** nativeDecimals;
 
     // Don't apply borrow factor
     if (borrowFactorPct === 0n) {
@@ -64,9 +111,15 @@ export class Collateralization {
 
     return exaggeratedUsdAmount;
   }
-  addDebt({ nativeAmount, borrowFactorPct, price8Decimals }: DebtInfo) {
+  addDebt({
+    nativeAmount,
+    nativeDecimals,
+    borrowFactorPct,
+    price8Decimals,
+  }: DebtInfo) {
     const usdAmount = this.calcDebt({
       nativeAmount,
+      nativeDecimals,
       borrowFactorPct,
       price8Decimals,
     });
@@ -107,6 +160,7 @@ export class Collateralization {
       ((((totalDiscountedCollateralsUsd - totalOtherDebtsUsd) *
         borrowFactorPctScaledUp) /
         10n ** 27n) *
+        // TODO is this right?
         10n ** 9n) / // To remove the decimals of the price and get the native amount
       calcMaxBorrowCapacityForDebt.price8Decimals;
 

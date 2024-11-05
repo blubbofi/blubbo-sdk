@@ -135,7 +135,8 @@ class BlubboUserUtils_testnet_2024_10_22_847a54a {
 }
 
 export class BlubboUserUtils {
-  static testnet_2024_10_22_847a54a = BlubboUserUtils_testnet_2024_10_22_847a54a;
+  static testnet_2024_10_22_847a54a =
+    BlubboUserUtils_testnet_2024_10_22_847a54a;
   static testnet_2024_10_25_687c2cb = this.testnet_2024_10_22_847a54a;
   static testnet_2024_11_01_7513aa7 = this.testnet_2024_10_22_847a54a;
 }

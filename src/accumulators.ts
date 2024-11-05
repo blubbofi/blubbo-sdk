@@ -34,7 +34,7 @@ export class Accumulators {
    * lending protocols. The lending accumulator stored on-chain is always not up to date, because it is updated
    * at last when a user interacts with the protocol. This function calculates the latest lending accumulator
    * based on the current lending rate and `args.block_timestamp`.
-   * 
+   *
    * `reserve_vars_0` and `reserve_vars_1` need to be retrieved by calling `getReserve`.
    */
   static getLendingAccumulator(args: GetLendingAccumulatorArgs): bigint {
@@ -71,7 +71,7 @@ export class Accumulators {
    * lending protocols. The debt accumulator stored on-chain is always not up to date, because it is updated
    * at last when a user interacts with the protocol. This function calculates the latest debt accumulator
    * based on the current borrowing rate and `args.block_timestamp`.
-   * 
+   *
    * `reserve_vars_1` need to be retrieved by calling `getReserve`.
    */
   static getDebtAccumulator(args: GetDebtAccumulatorArgs): bigint {
