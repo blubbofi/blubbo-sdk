@@ -1,6 +1,6 @@
 {
   "name": "@blubbofi/sdk",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "description": "SDK that interacts with Blubbo contracts",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
