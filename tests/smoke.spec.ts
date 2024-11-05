@@ -77,16 +77,16 @@ describe("Smoke tests", () => {
     ).toBe(true);
   });
 
-  it(`should give blubbo user address testnet_2024_10_25_687c2cb`, async () => {
+  it(`should give blubbo user address on testnet_2024_11_01_7513aa7`, async () => {
     const ownerAddress = Address.parse(
       `EQC0yj5mT3jND5VWPCpAC_nqErRMtXyurNO291J4PcWjmi1I`,
     );
     const calculatedAddress =
-      BlubboUserUtils.testnet_2024_10_25_687c2cb.calculateUserBlubboUserAddress(
+      BlubboUserUtils.testnet_2024_11_01_7513aa7.calculateUserBlubboUserAddress(
         ownerAddress,
-        ConstantsByDeployment.testnet_2024_10_25_687c2cb.AddressBook
+        ConstantsByDeployment.testnet_2024_11_01_7513aa7.AddressBook
           .BLUBBO_MASTER,
-        ConstantsByDeployment.testnet_2024_10_25_687c2cb.Config.BLUBBO_USER,
+        ConstantsByDeployment.testnet_2024_11_01_7513aa7.Config.BLUBBO_USER,
       );
 
     const client = new TonClient({
@@ -95,7 +95,7 @@ describe("Smoke tests", () => {
     });
     const bm = client.open(
       BlubboMaster.createFromAddress(
-        ConstantsByDeployment.testnet_2024_10_25_687c2cb.AddressBook
+        ConstantsByDeployment.testnet_2024_11_01_7513aa7.AddressBook
           .BLUBBO_MASTER,
       ),
     );

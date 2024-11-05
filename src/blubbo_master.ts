@@ -283,7 +283,8 @@ export class BlubboMaster implements Contract {
     provider: ContractProvider,
     userWalletAddress: Address,
   ) {
-    const res = await provider.get("fetch_blubbo_user_address", [
+    // TODO: change to `fetch_blubbo_user_address` once the rebranding is done
+    const res = await provider.get("fetch_beach_user_address", [
       {
         type: `slice`,
         cell: beginCell().storeAddress(userWalletAddress).endCell(),
