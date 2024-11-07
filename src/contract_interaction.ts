@@ -39,10 +39,6 @@ import {
  *   },
  *   constantsByDeployment: ConstantsByDeployment.testnet_2024_11_01_7513aa7,
  * });
- *
- * // needs to be called before anything else.
- * // can be called many times. It makes sure that it gets only initialized once
- * await contractInteraction.init();
  * ```
  */
 export class ContractInteraction {
@@ -76,6 +72,10 @@ export class ContractInteraction {
     this.addressBook = args.addressBook;
   }
 
+  /**
+   * There is no need to call this method explicitly. It is called automatically
+   * at the beginning of the other methods.
+   */
   async init() {
     if (this.initializing) {
       await new Promise((resolve) => {
@@ -109,13 +109,13 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
-   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createDepositRequest({...}));
    * ```
    */
   public async createDepositRequest(
     args: WithOwnerAddress<ContractInteractionDepositArgs>,
   ): Promise<SendTransactionRequest> {
+    await this.init();
     const messages: SendTransactionRequest["messages"] = [];
 
     if (
@@ -179,6 +179,8 @@ export class ContractInteraction {
     sender: Sender,
     args: WithOwnerAddress<ContractInteractionDepositArgs>,
   ) {
+    await this.init();
+
     if (
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
     ) {
@@ -221,13 +223,14 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
-   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createWithdrawRequest({...}));
    * ```
    */
-  public createWithdrawRequest(
+  public async createWithdrawRequest(
     args: ContractInteractionWithdrawArgs,
-  ): SendTransactionRequest {
+  ): Promise<SendTransactionRequest> {
+    await this.init();
+
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
         ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN.TOTAL
@@ -253,7 +256,9 @@ export class ContractInteraction {
     };
   }
 
-  public withdraw(sender: Sender, args: ContractInteractionWithdrawArgs) {
+  public async withdraw(sender: Sender, args: ContractInteractionWithdrawArgs) {
+    await this.init();
+
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
         ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN.TOTAL
@@ -272,13 +277,13 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
-   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createBorrowRequest({...}));
    * ```
    */
-  public createBorrowRequest(
+  public async createBorrowRequest(
     args: ContractInteractionBorrowArgs,
-  ): SendTransactionRequest {
+  ): Promise<SendTransactionRequest> {
+    await this.init();
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
         ? this.constantsByDeployment.Fee.BORROW.TONCOIN.TOTAL
@@ -304,7 +309,9 @@ export class ContractInteraction {
     };
   }
 
-  public borrow(sender: Sender, args: ContractInteractionBorrowArgs) {
+  public async borrow(sender: Sender, args: ContractInteractionBorrowArgs) {
+    await this.init();
+
     const gas =
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
         ? this.constantsByDeployment.Fee.BORROW.TONCOIN.TOTAL
@@ -323,13 +330,14 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
-   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createRepayRequest({...}));
    * ```
    */
   public async createRepayRequest(
     args: WithOwnerAddress<ContractInteractionRepayArgs>,
   ): Promise<SendTransactionRequest> {
+    await this.init();
+
     const messages: SendTransactionRequest["messages"] = [];
 
     if (
@@ -390,6 +398,8 @@ export class ContractInteraction {
     sender: Sender,
     args: WithOwnerAddress<ContractInteractionRepayArgs>,
   ) {
+    await this.init();
+
     if (
       args.reserve_id_6 === this.constantsByDeployment.Reserves.bySymbol.TON.id
     ) {
@@ -432,13 +442,14 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
-   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createMockJettonMintRequest({...}));
    * ```
    */
-  public createMockJettonMintRequest(
+  public async createMockJettonMintRequest(
     args: ContractInteractionMintArgs,
-  ): SendTransactionRequest {
+  ): Promise<SendTransactionRequest> {
+    await this.init();
+
     const msg = JettonMinter.mintMessage(
       args.response_addr,
       args.to,
