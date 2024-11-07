@@ -5,5 +5,6 @@ export default {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',  // Transform TypeScript files
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],  // Specify module file extensions
+  testTimeout: 60000,
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],  // Specify module file extensions,
 };

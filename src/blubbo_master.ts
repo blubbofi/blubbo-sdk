@@ -218,6 +218,7 @@ export class BlubboMaster implements Contract {
    * ```
    */
   async getReserve(provider: ContractProvider, reserve_id_6: bigint) {
+    console.log(provider, reserve_id_6)
     const res = await provider.get("fetch_reserve", [
       {
         type: `int`,
