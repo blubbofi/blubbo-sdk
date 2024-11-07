@@ -44,7 +44,8 @@ describe("Smoke tests", () => {
       constantsByDeployment: ConstantsByDeployment.testnet_2024_10_22_847a54a,
     });
     await contractInteraction.init();
-    await contractInteraction.blubboMaster.callAsyncMethod(`getReserve`,
+    await contractInteraction.blubboMaster.callAsyncMethod(
+      `getReserve`,
       BigInt(
         ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.bySymbol.TON
           .id,
