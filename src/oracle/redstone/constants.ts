@@ -14,7 +14,7 @@ export class RedstoneOracleConstants {
   static MAX_TIMESTAMP_DEVIATION_MS = 30 * 1000;
   static REDSTONE_DECIMALS = 8 as const;
 
-  // Directly copied from https://github.com/evaafi/merkle-oracles/blob/fbe3a92ba82553359815bda43d64f0997665e43a/src/constants.ts#L1
+  // Directly copied from https://github.com/evaafi/merkle-oracles-pub/blob/fbe3a92ba82553359815bda43d64f0997665e43a/src/constants.ts#L1
   static PRICE_TTL_MS = 30 * 1000;
   static ORACLE_RETRY_COUNT = 3;
   static ORACLE_RETRY_DELAY_MS = 1000;

@@ -1,4 +1,4 @@
-import { Address, Cell, OpenedContract, Sender, toNano } from "@ton/core";
+import { Address, Cell, Sender, toNano } from "@ton/core";
 import { BlubboMaster } from "./blubbo_master";
 import { Sotw } from "./sotw";
 import {
@@ -12,13 +12,16 @@ import {
   WithOwnerAddress,
 } from "./types";
 import { ConstantsByDeployment } from "./constants";
-import { TonClient } from "@ton/ton";
 import type { SendTransactionRequest } from "@tonconnect/sdk";
 import {
   getStandardJettonWalletForAddress,
   JettonMinter,
   JettonWallet,
 } from "./jetton";
+import {
+  OpenedContracts,
+  TonClientWithFallbacks,
+} from "./ton_client_with_fallbacks";
 
 /**
  * This class bridges the developer with the contract.
@@ -36,28 +39,69 @@ import {
  *   },
  *   constantsByDeployment: ConstantsByDeployment.testnet_2024_11_01_7513aa7,
  * });
+ *
+ * // needs to be called before anything else.
+ * // can be called many times. It makes sure that it gets only initialized once
+ * await contractInteraction.init();
  * ```
  */
 export class ContractInteraction {
-  blubboMaster: OpenedContract<BlubboMaster>;
-  sotw: OpenedContract<Sotw>;
-  client: TonClient;
+  /**
+   * Not actually defined until `init` is called.
+   */
+  blubboMaster!: OpenedContracts<BlubboMaster>;
+  /**
+   * Not actually defined until `init` is called.
+   */
+  sotw!: OpenedContracts<Sotw>;
+  client: TonClientWithFallbacks;
   constantsByDeployment: ConstantsByDeployment;
+  addressBook: {
+    blubboMaster: Address;
+    sotw: Address;
+  };
+  initialized = false;
+  initializing = false;
 
   constructor(args: {
-    client: TonClient;
+    client: TonClientWithFallbacks;
+    constantsByDeployment: ConstantsByDeployment;
     addressBook: {
       blubboMaster: Address;
       sotw: Address;
     };
-    constantsByDeployment: ConstantsByDeployment;
   }) {
     this.client = args.client;
-    this.blubboMaster = this.client.open(
-      new BlubboMaster(args.addressBook.blubboMaster),
-    );
-    this.sotw = this.client.open(new Sotw(args.addressBook.sotw));
     this.constantsByDeployment = args.constantsByDeployment;
+    this.addressBook = args.addressBook;
+  }
+
+  async init() {
+    if (this.initializing) {
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (this.initialized) {
+            clearInterval(interval);
+            resolve(``);
+          }
+        }, 10);
+      });
+
+      return;
+    }
+
+    if (this.initialized) {
+      return;
+    }
+
+    this.initializing = true;
+    this.blubboMaster = await this.client.openWithFallbacks(
+      new BlubboMaster(this.addressBook.blubboMaster),
+    );
+    this.sotw = await this.client.openWithFallbacks(
+      new Sotw(this.addressBook.sotw),
+    );
+    this.initialized = true;
   }
 
   /**
@@ -65,6 +109,7 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
+   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createDepositRequest({...}));
    * ```
    */
@@ -82,7 +127,7 @@ export class ContractInteraction {
         reserve_id_6,
       }: SendDepositToSotwArgs = args;
       messages.push({
-        address: this.sotw.address.toString(),
+        address: this.sotw.getPrimary().address.toString(),
         amount: (
           jetton_amount + this.constantsByDeployment.Fee.DEPOSIT.TONCOIN.TOTAL
         ).toString(),
@@ -108,11 +153,11 @@ export class ContractInteraction {
       });
 
       messages.push({
-        address: ownerJettonWallet.address.toString(),
+        address: ownerJettonWallet.accessVariable(`address`).toString(),
         amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendDepositBody({
           ...args,
-          to: this.blubboMaster.address,
+          to: this.blubboMaster.getPrimary().address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
         })
@@ -142,7 +187,7 @@ export class ContractInteraction {
         response_address,
         reserve_id_6,
       }: SendDepositToSotwArgs = args;
-      return this.sotw.sendDeposit(sender, {
+      return this.sotw.getPrimary().sendDeposit(sender, {
         jetton_amount,
         response_address,
         reserve_id_6,
@@ -163,9 +208,9 @@ export class ContractInteraction {
       },
     });
 
-    return ownerJettonWallet.sendDeposit(sender, {
+    return ownerJettonWallet.getPrimary().sendDeposit(sender, {
       ...restArgs,
-      to: this.blubboMaster.address,
+      to: this.blubboMaster.getPrimary().address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
     });
@@ -176,6 +221,7 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
+   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createWithdrawRequest({...}));
    * ```
    */
@@ -189,7 +235,7 @@ export class ContractInteraction {
 
     const messages: SendTransactionRequest["messages"] = [
       {
-        address: this.blubboMaster.address.toString(),
+        address: this.blubboMaster.getPrimary().address.toString(),
         amount: gas.toString(),
         payload: BlubboMaster.createSendWithdrawBody({
           ...args,
@@ -202,7 +248,7 @@ export class ContractInteraction {
     ];
 
     return {
-      validUntil: Date.now() + 30 * 1000, // 30 seconds because of the oracle prices validity expiration,
+      validUntil: Date.now() + 60 * 1000, // 60 seconds to get the benefit of latest oracle prices
       messages,
     };
   }
@@ -213,7 +259,7 @@ export class ContractInteraction {
         ? this.constantsByDeployment.Fee.WITHDRAW.TONCOIN.TOTAL
         : this.constantsByDeployment.Fee.WITHDRAW.OTHER.TOTAL;
 
-    return this.blubboMaster.sendWithdraw(sender, {
+    return this.blubboMaster.getPrimary().sendWithdraw(sender, {
       ...args,
       gas,
       configPayload: this.constantsByDeployment.Config.PAYLOAD,
@@ -226,6 +272,7 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
+   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createBorrowRequest({...}));
    * ```
    */
@@ -239,7 +286,7 @@ export class ContractInteraction {
 
     const messages: SendTransactionRequest["messages"] = [
       {
-        address: this.blubboMaster.address.toString(),
+        address: this.blubboMaster.getPrimary().address.toString(),
         amount: gas.toString(),
         payload: BlubboMaster.createSendBorrowBody({
           ...args,
@@ -252,7 +299,7 @@ export class ContractInteraction {
     ];
 
     return {
-      validUntil: Date.now() + 30 * 1000, // 30 seconds because of the oracle prices validity expiration,
+      validUntil: Date.now() + 60 * 1000, // 60 seconds to get the benefit of latest oracle prices
       messages,
     };
   }
@@ -263,7 +310,7 @@ export class ContractInteraction {
         ? this.constantsByDeployment.Fee.BORROW.TONCOIN.TOTAL
         : this.constantsByDeployment.Fee.BORROW.OTHER.TOTAL;
 
-    return this.blubboMaster.sendBorrow(sender, {
+    return this.blubboMaster.getPrimary().sendBorrow(sender, {
       ...args,
       gas,
       configPayload: this.constantsByDeployment.Config.PAYLOAD,
@@ -276,6 +323,7 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
+   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createRepayRequest({...}));
    * ```
    */
@@ -293,7 +341,7 @@ export class ContractInteraction {
         reserve_id_6,
       }: SendRepayToSotwArgs = args;
       messages.push({
-        address: this.sotw.address.toString(),
+        address: this.sotw.getPrimary().address.toString(),
         amount: (
           jetton_amount + this.constantsByDeployment.Fee.REPAY.TONCOIN.TOTAL
         ).toString(),
@@ -319,11 +367,11 @@ export class ContractInteraction {
       });
 
       messages.push({
-        address: ownerJettonWallet.address.toString(),
+        address: ownerJettonWallet.getPrimary().address.toString(),
         amount: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendRepayBody({
           ...restArgs,
-          to: this.blubboMaster.address,
+          to: this.blubboMaster.getPrimary().address,
           forward_ton_amount:
             this.constantsByDeployment.Fee.REPAY.OTHER.FORWARD,
         })
@@ -350,7 +398,7 @@ export class ContractInteraction {
         response_address,
         reserve_id_6,
       }: SendRepayToSotwArgs = args;
-      return this.sotw.sendRepay(sender, {
+      return this.sotw.getPrimary().sendRepay(sender, {
         jetton_amount,
         response_address,
         reserve_id_6,
@@ -370,9 +418,9 @@ export class ContractInteraction {
       },
     });
 
-    return ownerJettonWallet.sendRepay(sender, {
+    return ownerJettonWallet.getPrimary().sendRepay(sender, {
       ...restArgs,
-      to: this.blubboMaster.address,
+      to: this.blubboMaster.getPrimary().address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
       forward_ton_amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.FORWARD,
     });
@@ -384,6 +432,7 @@ export class ContractInteraction {
    * ```
    * const [tonConnectUI] = useTonConnectUI();
    * const contractInteraction = new ContractInteraction({ ... });
+   * await contractInteraction.init();
    * const result = await tonConnectUI.sendTransaction(await contractInteraction.createMockJettonMintRequest({...}));
    * ```
    */
