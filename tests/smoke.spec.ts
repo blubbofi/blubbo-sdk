@@ -43,16 +43,13 @@ describe("Smoke tests", () => {
       },
       constantsByDeployment: ConstantsByDeployment.testnet_2024_10_22_847a54a,
     });
-    try {
-      await contractInteraction.blubboMaster.getReserve(
-        BigInt(
-          ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.bySymbol.TON
-            .id,
-        ),
-      );
-    } catch (e) {
-      fail(e);
-    }
+    await contractInteraction.init();
+    await contractInteraction.blubboMaster.callAsyncMethod(`getReserve`,
+      BigInt(
+        ConstantsByDeployment.testnet_2024_10_22_847a54a.Reserves.bySymbol.TON
+          .id,
+      ),
+    );
   });
 
   it(`should get jetton wallet for owner address`, async () => {
