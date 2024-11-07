@@ -3,8 +3,8 @@
  * because it's not exported from the package
  */
 import { consts } from "@redstone-finance/protocol";
-import { equal } from "assert";
 import { BigNumber } from "ethers";
+import { assert } from "../../utils";
 
 export function splitPayloadHex(payloadHex: string) {
   //TODO: assert value size == 32;
@@ -42,9 +42,8 @@ export function splitPayloadHex(payloadHex: string) {
     "0x" + metadata.substring(0, consts.DATA_PACKAGES_COUNT_BS * 2),
   ).toNumber();
 
-  equal(
-    payloadHex.length - 2 * metadataBS,
-    2 * DATA_PACKAGE_BS * dataPackageCount,
+  assert(
+    payloadHex.length - 2 * metadataBS === 2 * DATA_PACKAGE_BS * dataPackageCount,
     "Must be implemented for multi-datapoint packages",
   );
 
