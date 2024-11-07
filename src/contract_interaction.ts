@@ -12,13 +12,13 @@ import {
   WithOwnerAddress,
 } from "./types";
 import { ConstantsByDeployment } from "./constants";
-import { TonClient } from "@ton/ton";
 import type { SendTransactionRequest } from "@tonconnect/sdk";
 import {
   getStandardJettonWalletForAddress,
   JettonMinter,
   JettonWallet,
 } from "./jetton";
+import { TonClientWithFallbacks } from "./ton_client_with_fallbacks";
 
 /**
  * This class bridges the developer with the contract.
@@ -41,11 +41,11 @@ import {
 export class ContractInteraction {
   blubboMaster: OpenedContract<BlubboMaster>;
   sotw: OpenedContract<Sotw>;
-  client: TonClient;
+  client: TonClientWithFallbacks;
   constantsByDeployment: ConstantsByDeployment;
 
   constructor(args: {
-    client: TonClient;
+    client: TonClientWithFallbacks;
     addressBook: {
       blubboMaster: Address;
       sotw: Address;
@@ -108,7 +108,7 @@ export class ContractInteraction {
       });
 
       messages.push({
-        address: ownerJettonWallet.address.toString(),
+        address: ownerJettonWallet.accessVariable(`address`).toString(),
         amount: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendDepositBody({
           ...args,
@@ -163,7 +163,7 @@ export class ContractInteraction {
       },
     });
 
-    return ownerJettonWallet.sendDeposit(sender, {
+    return ownerJettonWallet.getPrimary().sendDeposit(sender, {
       ...restArgs,
       to: this.blubboMaster.address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,
@@ -319,7 +319,7 @@ export class ContractInteraction {
       });
 
       messages.push({
-        address: ownerJettonWallet.address.toString(),
+        address: ownerJettonWallet.getPrimary().address.toString(),
         amount: this.constantsByDeployment.Fee.REPAY.OTHER.TOTAL.toString(),
         payload: JettonWallet.createSendRepayBody({
           ...restArgs,
@@ -370,7 +370,7 @@ export class ContractInteraction {
       },
     });
 
-    return ownerJettonWallet.sendRepay(sender, {
+    return ownerJettonWallet.getPrimary().sendRepay(sender, {
       ...restArgs,
       to: this.blubboMaster.address,
       gas: this.constantsByDeployment.Fee.DEPOSIT.OTHER.TOTAL,

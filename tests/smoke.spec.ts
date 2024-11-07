@@ -8,6 +8,7 @@ import {
   getStandardJettonWalletForAddress,
   BlubboUserUtils,
   BlubboMaster,
+  TonClientWithFallbacks,
 } from "../src/index";
 import { Address, TonClient } from "@ton/ton";
 
@@ -21,12 +22,19 @@ if (!TONCENTER_API_KEY) {
 
 describe("Smoke tests", () => {
   it(`should get reserve`, async () => {
-    const client = new TonClient({
-      endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-      apiKey: TONCENTER_API_KEY,
-    });
+    const tonClientWithFallbacks = new TonClientWithFallbacks(
+      {
+        endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+        apiKey: TONCENTER_API_KEY,
+      },
+      [],
+      {
+        retryTimes: 3,
+        retryIntervalMs: 2000,
+      },
+    );
     const contractInteraction = new ContractInteraction({
-      client,
+      client: tonClientWithFallbacks,
       addressBook: {
         blubboMaster:
           ConstantsByDeployment.testnet_2024_10_22_847a54a.AddressBook
@@ -48,19 +56,26 @@ describe("Smoke tests", () => {
   });
 
   it(`should get jetton wallet for owner address`, async () => {
-    const client = new TonClient({
-      // We're on mainnet for this one
-      endpoint: "https://toncenter.com/api/v2/jsonRPC",
-      apiKey: TONCENTER_API_KEY,
-    });
+    const tonClientWithFallbacks = new TonClientWithFallbacks(
+      {
+        // We're on mainnet for this one
+        endpoint: "https://toncenter.com/api/v2/jsonRPC",
+        apiKey: TONCENTER_API_KEY,
+      },
+      [],
+      {
+        retryTimes: 3,
+        retryIntervalMs: 2000,
+      },
+    );
 
     // https://tonviewer.com/EQAVkAV5mRv5O1H6qZNRuhY4FdJlInqoz4n-_LThUZ0TbJxE/jetton/EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav
     const expectedJettonWalletAddress = Address.parse(
       `EQC0yj5mT3jND5VWPCpAC_nqErRMtXyurNO291J4PcWjmi1I`,
     );
 
-    const jettonWalletAddress = await getStandardJettonWalletForAddress({
-      tonClient: client,
+    const jettonWalletContract = await getStandardJettonWalletForAddress({
+      tonClient: tonClientWithFallbacks,
       address: {
         owner: Address.parse(
           `UQAVkAV5mRv5O1H6qZNRuhY4FdJlInqoz4n-_LThUZ0TbMGB`,
@@ -73,7 +88,9 @@ describe("Smoke tests", () => {
     });
 
     expect(
-      jettonWalletAddress.address.equals(expectedJettonWalletAddress),
+      jettonWalletContract
+        .getPrimary()
+        .address.equals(expectedJettonWalletAddress),
     ).toBe(true);
   });
 

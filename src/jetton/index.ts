@@ -1,6 +1,7 @@
-import { Address, TonClient } from "@ton/ton";
+import { Address } from "@ton/ton";
 import { JettonMinter } from "./jetton_minter";
 import { JettonWallet } from "./jetton_wallet";
+import { TonClientWithFallbacks } from "../ton_client_with_fallbacks";
 
 export * from "./jetton_constants";
 export * from "./jetton_minter";
@@ -21,17 +22,20 @@ export * from "./jetton_wallet";
  * when deriving a jetton wallet address, which is `(await getStandardJettonWalletForAddress(...)).address`.
  */
 export async function getStandardJettonWalletForAddress(args: {
-  tonClient: TonClient;
+  tonClient: TonClientWithFallbacks;
   address: {
     owner: Address;
     jettonMinter: Address;
   };
 }) {
-  const minter = args.tonClient.open(
+  const minter = await args.tonClient.openWithFallbacks(
     JettonMinter.createFromAddress(args.address.jettonMinter),
   );
-  const jettonWalletAddress = await minter.getWalletAddress(args.address.owner);
-  const jettonWallet = args.tonClient.open(
+  const jettonWalletAddress = await minter.callAsyncMethod(
+    `getWalletAddress`,
+    args.address.owner,
+  );
+  const jettonWallet = args.tonClient.openWithFallbacks(
     JettonWallet.createFromAddress(jettonWalletAddress),
   );
 
