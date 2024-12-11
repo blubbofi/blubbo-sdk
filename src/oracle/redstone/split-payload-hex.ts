@@ -43,7 +43,8 @@ export function splitPayloadHex(payloadHex: string) {
   ).toNumber();
 
   assert(
-    payloadHex.length - 2 * metadataBS === 2 * DATA_PACKAGE_BS * dataPackageCount,
+    payloadHex.length - 2 * metadataBS ===
+      2 * DATA_PACKAGE_BS * dataPackageCount,
     "Must be implemented for multi-datapoint packages",
   );
 
