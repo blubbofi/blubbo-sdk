@@ -46,6 +46,17 @@ class AddressBook {
       "0:96ccb2b7edff3049e13b439b73ae9a3ad4fac88204b75a70d775d958bd3bb3cb",
     ),
   });
+  public static testnet_2025_01_09_e52cb8e = Object.freeze({
+    BLUBBO_MASTER: Address.parseRaw(
+      "0:d065d866af15734d99951e37d4298d14dd0bcbb716e3306e170275d85b98dfb0",
+    ),
+    SOTW: Address.parseRaw(
+      "0:e63fb470b0404d44d97911c09e003407716d4311afa82b3c288f35b6ef76bbe6",
+    ),
+    MOCK_USDT_JETTON_MINTER: Address.parseRaw(
+      "0:96ccb2b7edff3049e13b439b73ae9a3ad4fac88204b75a70d775d958bd3bb3cb",
+    ),
+  });
 }
 
 class Reserves {
@@ -116,6 +127,40 @@ class Reserves {
         decimals: 6,
         minterAddress:
           AddressBook.testnet_2025_01_09_5bb79bf.MOCK_USDT_JETTON_MINTER,
+      },
+    },
+  } as const);
+  public static testnet_2025_01_09_e52cb8e = Object.freeze({
+    byId: {
+      0: {
+        name: "Toncoin",
+        symbol: "TON",
+        id: 0,
+        decimals: 9,
+      },
+      1: {
+        name: "Tether",
+        symbol: "USDT",
+        id: 1,
+        decimals: 6,
+        minterAddress:
+          AddressBook.testnet_2025_01_09_e52cb8e.MOCK_USDT_JETTON_MINTER,
+      },
+    },
+    bySymbol: {
+      TON: {
+        name: "Toncoin",
+        symbol: "TON",
+        id: 0,
+        decimals: 9,
+      },
+      USDT: {
+        name: "Tether",
+        symbol: "USDT",
+        id: 1,
+        decimals: 6,
+        minterAddress:
+          AddressBook.testnet_2025_01_09_e52cb8e.MOCK_USDT_JETTON_MINTER,
       },
     },
   } as const);
@@ -276,6 +321,71 @@ class Fee {
       },
     },
   } as const);
+  public static testnet_2025_01_09_e52cb8e = Object.freeze({
+    DEPOSIT: {
+      TONCOIN: {
+        TOTAL: toNano("0.2"),
+        EXPECTED_AT_MASTER: toNano("0.196"),
+        EXPECTED_REFUND: toNano("0.135"),
+      },
+      OTHER: {
+        TOTAL: toNano("0.2"),
+        FORWARD: toNano("0.1"),
+        EXPECTED_AT_MASTER: toNano("0.1"),
+        EXPECTED_REFUND: toNano("0.101"),
+      },
+    },
+    WITHDRAW: {
+      TONCOIN: {
+        TOTAL: toNano("0.24"),
+        EXPECTED_AT_MASTER: toNano("0.24"),
+        EXPECTED_REFUND: toNano(`0.077`),
+      },
+      OTHER: {
+        TOTAL: toNano("0.24"),
+        EXPECTED_AT_MASTER: toNano("0.24"),
+        EXPECTED_REFUND: toNano(`0.060`),
+      },
+    },
+    BORROW: {
+      TONCOIN: {
+        TOTAL: toNano("0.24"),
+        EXPECTED_AT_MASTER: toNano("0.24"),
+        EXPECTED_REFUND: toNano(`0.077`),
+      },
+      OTHER: {
+        TOTAL: toNano(`0.24`),
+        EXPECTED_AT_MASTER: toNano("0.24"),
+        EXPECTED_REFUND: toNano(`0.060`),
+      },
+    },
+    REPAY: {
+      TONCOIN: {
+        TOTAL: toNano("0.17"),
+        EXPECTED_AT_MASTER: toNano("0.166"),
+        EXPECTED_REFUND: toNano(`0.070`),
+      },
+      OTHER: {
+        TOTAL: toNano("0.2"),
+        FORWARD: toNano("0.11"),
+        EXPECTED_AT_MASTER: toNano("0.11"),
+        EXPECTED_REFUND: toNano(`0.079`),
+      },
+    },
+    LIQUIDATE: {
+      TONCOIN: {
+        TOTAL: toNano("0.35"),
+        EXPECTED_AT_MASTER: toNano("0.34"),
+        EXPECTED_REFUND: toNano(`0.135`),
+      },
+      OTHER: {
+        TOTAL: toNano("0.35"),
+        FORWARD: toNano("0.25"),
+        EXPECTED_AT_MASTER: toNano("0.25"),
+        EXPECTED_REFUND: toNano(`0.104`),
+      },
+    },
+  } as const);
 }
 
 class Config {
@@ -322,6 +432,17 @@ class Config {
       bocHex: `b5ee9c72410106010074000114ff00f4a413f4bcf2c80b0102016202050202cd03040063d1063804ac08dad79786f10e8698180b8d84ac08dacf9786f7d201876a2687d207d20181880e382d9cac08dac79786f78024003fd10698f98ea18686a6a6986981810fd8200e8768f76a9c100edbb76a1ec790040009a1b6ecbe0baff251b6`,
     }),
   } as const);
+  public static readonly testnet_2025_01_09_e52cb8e = Object.freeze({
+    PAYLOAD: buildCellFromBocHex({
+      bocHex: `b5ee9c724101090100de0002013801030118000002010000000055534454020112010000000000544f4e08014a00000502000000000000000000000000009c5ae89c4af6aa32ce58588dbaf90d18a855b6de0401440200000000000000000000000000dd682daec5a90dd295d14da4b0bec9281017b5be050144020000000000000000000000000051ce04be4b3e32572c4ec9135221d0691ba7d2020601440200000000000000000000000000deb22f54738d54976c4c0fe5ce6d408e40d8849907014402000000000000000000000000008bb8f32df04c8b654987daaed53d6b6091e3b774080000de146516`,
+    }),
+    SIGNATURE: buildCellFromBocHex({
+      bocHex: `b5ee9c72410101010042000080b36f07b0ce06bdc33ee4ec8a836ba72cf85c160f7a007efcbe2c72034ce5e9f8beaaa56325734944fa954b2888b5ca477f910638ee1d770fefa7d12d4f4e79065d3c1570`,
+    }),
+    OWNER_UPGRADABLE: buildCellFromBocHex({
+      bocHex: `b5ee9c72410106010074000114ff00f4a413f4bcf2c80b0102016202050202cd03040063d1063804ac08dad79786f10e8698180b8d84ac08dacf9786f7d201876a2687d207d20181880e382d9cac08dac79786f78024003fd10698f98ea18686a6a6986981810fd8200e8768f76a9c100edbb76a1ec790040009a1b6ecbe0baff251b6`,
+    }),
+  } as const);
 }
 
 export const ConstantsByDeployment = {
@@ -348,6 +469,12 @@ export const ConstantsByDeployment = {
     Reserves: Reserves.testnet_2025_01_09_5bb79bf,
     Fee: Fee.testnet_2025_01_09_5bb79bf,
     Config: Config.testnet_2025_01_09_5bb79bf,
+  },
+  testnet_2025_01_09_e52cb8e: {
+    AddressBook: AddressBook.testnet_2025_01_09_e52cb8e,
+    Reserves: Reserves.testnet_2025_01_09_e52cb8e,
+    Fee: Fee.testnet_2025_01_09_e52cb8e,
+    Config: Config.testnet_2025_01_09_e52cb8e,
   },
 };
 
