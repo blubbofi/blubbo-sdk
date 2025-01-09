@@ -6,7 +6,7 @@ import {
   ConstantsByDeployment,
   ContractInteraction,
   getStandardJettonWalletForAddress,
-  BlubboUserUtils,
+  OwnerUpgradable,
   BlubboMaster,
   TonClientWithFallbacks,
 } from "../src/index";
@@ -92,16 +92,17 @@ describe("Smoke tests", () => {
     ).toBe(true);
   });
 
-  it(`should give blubbo user address on testnet_2024_11_01_7513aa7`, async () => {
+  it(`should give a correct blubbo user address on testnet_2025_01_09_5bb79bf`, async () => {
     const ownerAddress = Address.parse(
       `EQC0yj5mT3jND5VWPCpAC_nqErRMtXyurNO291J4PcWjmi1I`,
     );
     const calculatedAddress =
-      BlubboUserUtils.testnet_2024_11_01_7513aa7.calculateUserBlubboUserAddress(
+      OwnerUpgradable.calculate_owner_upgradable_address(
         ownerAddress,
-        ConstantsByDeployment.testnet_2024_11_01_7513aa7.AddressBook
+        ConstantsByDeployment.testnet_2025_01_09_5bb79bf.AddressBook
           .BLUBBO_MASTER,
-        ConstantsByDeployment.testnet_2024_11_01_7513aa7.Config.BLUBBO_USER,
+        ConstantsByDeployment.testnet_2025_01_09_5bb79bf.Config
+          .OWNER_UPGRADABLE,
       );
 
     const client = new TonClient({
@@ -110,7 +111,7 @@ describe("Smoke tests", () => {
     });
     const bm = client.open(
       BlubboMaster.createFromAddress(
-        ConstantsByDeployment.testnet_2024_11_01_7513aa7.AddressBook
+        ConstantsByDeployment.testnet_2025_01_09_5bb79bf.AddressBook
           .BLUBBO_MASTER,
       ),
     );

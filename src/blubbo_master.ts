@@ -283,8 +283,7 @@ export class BlubboMaster implements Contract {
     provider: ContractProvider,
     userWalletAddress: Address,
   ) {
-    // TODO: change to `fetch_blubbo_user_address` once the rebranding is done
-    const res = await provider.get("fetch_beach_user_address", [
+    const res = await provider.get("fetch_blubbo_user_address", [
       {
         type: `slice`,
         cell: beginCell().storeAddress(userWalletAddress).endCell(),
@@ -301,7 +300,12 @@ export class BlubboMaster implements Contract {
       .storeUint(args.reserve_id_6, 6)
       .storeRef(args.redstoneData)
       .storeRef(args.configPayload)
-      .storeRef(beginCell().storeRef(args.configSignature).endCell())
+      .storeRef(
+        beginCell()
+          .storeRef(args.configSignature)
+          .storeUint(args.system_version ?? 1, 14) // system version
+          .endCell(),
+      )
       .endCell();
   }
 
@@ -324,7 +328,12 @@ export class BlubboMaster implements Contract {
       .storeUint(args.reserve_id_6, 6)
       .storeRef(args.redstoneData)
       .storeRef(args.configPayload)
-      .storeRef(beginCell().storeRef(args.configSignature).endCell())
+      .storeRef(
+        beginCell()
+          .storeRef(args.configSignature)
+          .storeUint(args.system_version ?? 1, 14) // system version
+          .endCell(),
+      )
       .endCell();
   }
 

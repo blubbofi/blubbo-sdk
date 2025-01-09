@@ -299,6 +299,28 @@ export type ContractInteractionRepayArgs = Omit<
   "forward_ton_amount" | "to"
 >;
 
+export type SendLiquidateArgs = {
+  jetton_amount: bigint;
+  to: Address;
+  response_address: Address;
+  forward_ton_amount: bigint;
+  forward_payload: {
+    debt_reserve_id: ReserveId;
+    /**
+     * The address of the wallet to which to-be-liquidated BlubboUser contract belongs.
+     * (This is NOT the address of BlubboUser contract)
+     */
+    liquidation_target_wallet_address: Address;
+    collateral_reserve_id: ReserveId;
+    redstoneData: Cell;
+    configPayload: Cell;
+    configSignature: Cell;
+    system_version: bigint;
+  };
+};
+
+export type SendLiquidateToSotwArgs = Omit<SendLiquidateArgs, "custom_payload">;
+
 export type ContractInteractionMintArgs = {
   jetton_minter_addr: Address;
   response_addr: Address;

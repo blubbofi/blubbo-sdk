@@ -7,7 +7,12 @@ import {
   Sender,
   SendMode,
 } from "@ton/core";
-import { SendDepositToSotwArgs, SendRepayToSotwArgs, WithGas } from "./types";
+import {
+  SendDepositToSotwArgs,
+  SendLiquidateToSotwArgs,
+  SendRepayToSotwArgs,
+  WithGas,
+} from "./types";
 import { JettonWallet } from "./jetton/jetton_wallet";
 
 export class Sotw implements Contract {
@@ -60,6 +65,35 @@ export class Sotw implements Contract {
     );
   }
 
+  static createSendLiquidateBody(args: SendLiquidateToSotwArgs) {
+    const forwardPayload = beginCell()
+      .storeUint(0b010, 3) // Liquidate constructor prefix
+      .storeUint(args.forward_payload.debt_reserve_id, 6)
+      .storeUint(args.forward_payload.system_version ?? 1, 14) // system version
+      .storeAddress(args.forward_payload.liquidation_target_wallet_address)
+      .storeUint(args.forward_payload.collateral_reserve_id, 6)
+      .storeRef(
+        beginCell()
+          .storeRef(args.forward_payload.redstoneData)
+          .storeRef(args.forward_payload.configPayload)
+          .storeRef(args.forward_payload.configSignature)
+          .endCell(),
+      )
+      .endCell();
+
+    return JettonWallet.transferMessage(
+      args.jetton_amount, // jetton_amount
+      // Just addr_none to comply with the transfer message format
+      Address.parse(
+        `0:0000000000000000000000000000000000000000000000000000000000000000`,
+      ), // to
+      args.response_address, // responseAddress
+      null, // customPayload
+      0n, // forward_ton_amount (forward fee is directly paid by msg value)
+      forwardPayload,
+    );
+  }
+
   async sendDeposit(
     provider: ContractProvider,
     via: Sender,
@@ -81,6 +115,18 @@ export class Sotw implements Contract {
       value: args.gas + args.jetton_amount,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
       body: Sotw.createSendRepayBody(args),
+    });
+  }
+
+  async sendLiquidate(
+    provider: ContractProvider,
+    via: Sender,
+    args: WithGas<SendLiquidateToSotwArgs>,
+  ) {
+    await provider.internal(via, {
+      value: args.gas + args.jetton_amount,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+      body: Sotw.createSendLiquidateBody(args),
     });
   }
 

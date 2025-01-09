@@ -318,6 +318,9 @@ class Config {
     SIGNATURE: buildCellFromBocHex({
       bocHex: `b5ee9c72410101010042000080b36f07b0ce06bdc33ee4ec8a836ba72cf85c160f7a007efcbe2c72034ce5e9f8beaaa56325734944fa954b2888b5ca477f910638ee1d770fefa7d12d4f4e79065d3c1570`,
     }),
+    OWNER_UPGRADABLE: buildCellFromBocHex({
+      bocHex: `b5ee9c72410106010074000114ff00f4a413f4bcf2c80b0102016202050202cd03040063d1063804ac08dad79786f10e8698180b8d84ac08dacf9786f7d201876a2687d207d20181880e382d9cac08dac79786f78024003fd10698f98ea18686a6a6986981810fd8200e8768f76a9c100edbb76a1ec790040009a1b6ecbe0baff251b6`,
+    }),
   } as const);
 }
 
@@ -344,7 +347,7 @@ export const ConstantsByDeployment = {
     AddressBook: AddressBook.testnet_2025_01_09_5bb79bf,
     Reserves: Reserves.testnet_2025_01_09_5bb79bf,
     Fee: Fee.testnet_2025_01_09_5bb79bf,
-    Config: Config.testnet_2024_11_01_7513aa7,
+    Config: Config.testnet_2025_01_09_5bb79bf,
   },
 };
 
