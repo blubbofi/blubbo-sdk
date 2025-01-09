@@ -39,7 +39,7 @@ export class BlubboUser implements Contract {
       Dictionary.Keys.BigUint(6),
       Dictionary.Values.Cell(),
     );
-    const blubbo_user_code = slice.loadRef();
+    const blubbo_user_version = slice.loadUintBig(14);
     const additionalData = slice.loadMaybeRef();
     slice.endParse();
 
@@ -48,7 +48,7 @@ export class BlubboUser implements Contract {
       blubbo_master_address,
       raw_deposit_per_jetton_dict,
       raw_debt_per_jetton_dict,
-      blubbo_user_code,
+      blubbo_user_version,
       additionalData,
     };
   }
@@ -67,7 +67,7 @@ export class BlubboUser implements Contract {
         Dictionary.Keys.BigUint(6),
         Dictionary.Values.Cell(),
       )
-      .storeRef(userVars0.blubbo_user_code)
+      .storeUint(userVars0.blubbo_user_version, 14)
       .storeMaybeRef(userVars0.additionalData)
       .endCell();
   }

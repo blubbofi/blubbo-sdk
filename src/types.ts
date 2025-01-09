@@ -28,6 +28,10 @@ export const TonBoolToBoolean = (value: TONBool) => value === TONBool.TRUE;
  */
 export type ReserveId = 0 | 1;
 
+export type WithSystemVersion<T> = {
+  system_version: bigint;
+} & T;
+
 export type ReserveVars0 = {
   /**
    * Whether the reserve is enabled or not.
@@ -148,7 +152,7 @@ export type BlubboReserveStorage = {
   reserve_vars_3: Cell;
 };
 
-export type SendDepositArgs = {
+export type SendDepositArgs = WithSystemVersion<{
   /**
    * The reserve ID of the jetton.
    * Each jetton has a unique reserve ID.
@@ -180,11 +184,11 @@ export type SendDepositArgs = {
    * to be used as a gas.
    */
   forward_ton_amount: bigint;
-};
+}>;
 
 export type SendDepositToSotwArgs = Pick<
   SendDepositArgs,
-  "jetton_amount" | "reserve_id_6" | "response_address"
+  "jetton_amount" | "reserve_id_6" | "response_address" | "system_version"
 >;
 
 export type ContractInteractionDepositArgs = Omit<
@@ -192,7 +196,7 @@ export type ContractInteractionDepositArgs = Omit<
   "forward_ton_amount" | "to"
 >;
 
-export type SendWithdrawArgs = {
+export type SendWithdrawArgs = WithSystemVersion<{
   /**
    * The reserve ID of the jetton.
    * Each jetton has a unique reserve ID.
@@ -215,14 +219,14 @@ export type SendWithdrawArgs = {
    * Redstone data. This is retrieved from Redstone oracle before the transaction.
    */
   redstoneData: Cell;
-};
+}>;
 
 export type ContractInteractionWithdrawArgs = Omit<
   SendWithdrawArgs,
   "configPayload" | "configSignature"
 >;
 
-export type SendBorrowArgs = {
+export type SendBorrowArgs = WithSystemVersion<{
   /**
    * The reserve ID of the jetton.
    * Each jetton has a unique reserve ID.
@@ -245,14 +249,14 @@ export type SendBorrowArgs = {
    * Redstone data. This is retrieved from Redstone oracle before the transaction.
    */
   redstoneData: Cell;
-};
+}>;
 
 export type ContractInteractionBorrowArgs = Omit<
   SendBorrowArgs,
   "configPayload" | "configSignature"
 >;
 
-export type SendRepayArgs = {
+export type SendRepayArgs = WithSystemVersion<{
   /**
    * The reserve ID of the jetton.
    * Each jetton has a unique reserve ID.
@@ -283,11 +287,11 @@ export type SendRepayArgs = {
    * forwarded messages from the first contract that received the transaction,
    */
   forward_ton_amount: bigint;
-};
+}>;
 
 export type SendRepayToSotwArgs = Pick<
   SendRepayArgs,
-  "jetton_amount" | "reserve_id_6" | "response_address"
+  "jetton_amount" | "reserve_id_6" | "response_address" | "system_version"
 >;
 
 export type ContractInteractionRepayArgs = Omit<
@@ -331,9 +335,9 @@ export type BlubboUserVars0 = {
    */
   raw_debt_per_jetton_dict: null | Dictionary<bigint, Cell>;
   /**
-   * The code of the Blubbo user contract.
+   * Version of the BlubboUser contract.
    */
-  blubbo_user_code: Cell;
+  blubbo_user_version: bigint;
   // Unused for now (always set as null)
   additionalData: Maybe<Cell>;
 };

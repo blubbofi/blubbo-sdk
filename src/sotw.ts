@@ -24,6 +24,7 @@ export class Sotw implements Contract {
     const forwardPayload = beginCell()
       .storeUint(0b000, 3) // Deposit constructor prefix
       .storeUint(args.reserve_id_6, 6)
+      .storeUint(args.system_version, 14)
       .endCell();
 
     return JettonWallet.transferMessage(
@@ -43,6 +44,7 @@ export class Sotw implements Contract {
     const forwardPayload = beginCell()
       .storeUint(0b001, 3) // Repay constructor prefix
       .storeUint(args.reserve_id_6, 6)
+      .storeUint(args.system_version, 14)
       .endCell();
 
     return JettonWallet.transferMessage(

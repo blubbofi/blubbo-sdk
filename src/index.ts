@@ -12,5 +12,5 @@ export * from "./contract_interaction";
 export * from "./humanizer";
 export * from "./oracle/redstone";
 export * from "./jetton";
-export * from "./blubbo_user_utils";
+export * from "./owner_upgradable";
 export * from "./ton_client_with_fallbacks";
