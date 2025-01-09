@@ -125,6 +125,7 @@ export class ContractInteraction {
         jetton_amount,
         response_address,
         reserve_id_6,
+        system_version,
       }: SendDepositToSotwArgs = args;
       messages.push({
         address: this.sotw.getPrimary().address.toString(),
@@ -135,6 +136,7 @@ export class ContractInteraction {
           jetton_amount,
           response_address,
           reserve_id_6,
+          system_version,
         })
           .toBoc()
           .toString("base64"),
@@ -188,11 +190,13 @@ export class ContractInteraction {
         jetton_amount,
         response_address,
         reserve_id_6,
+        system_version,
       }: SendDepositToSotwArgs = args;
       return this.sotw.getPrimary().sendDeposit(sender, {
         jetton_amount,
         response_address,
         reserve_id_6,
+        system_version,
         gas: this.constantsByDeployment.Fee.DEPOSIT.TONCOIN.TOTAL,
       });
     }
@@ -347,6 +351,7 @@ export class ContractInteraction {
         jetton_amount,
         response_address,
         reserve_id_6,
+        system_version,
       }: SendRepayToSotwArgs = args;
       messages.push({
         address: this.sotw.getPrimary().address.toString(),
@@ -357,6 +362,7 @@ export class ContractInteraction {
           jetton_amount,
           response_address,
           reserve_id_6,
+          system_version,
         })
           .toBoc()
           .toString("base64"),
@@ -407,11 +413,13 @@ export class ContractInteraction {
         jetton_amount,
         response_address,
         reserve_id_6,
+        system_version,
       }: SendRepayToSotwArgs = args;
       return this.sotw.getPrimary().sendRepay(sender, {
         jetton_amount,
         response_address,
         reserve_id_6,
+        system_version,
         gas: this.constantsByDeployment.Fee.REPAY.TONCOIN.TOTAL,
       });
     }

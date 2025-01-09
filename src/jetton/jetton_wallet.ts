@@ -8,7 +8,12 @@ import {
   Sender,
   SendMode,
 } from "@ton/core";
-import { SendDepositArgs, SendRepayArgs, WithGas } from "../types";
+import {
+  SendDepositArgs,
+  SendLiquidateArgs,
+  SendRepayArgs,
+  WithGas,
+} from "../types";
 
 export class JettonWallet implements Contract {
   constructor(
@@ -53,6 +58,7 @@ export class JettonWallet implements Contract {
     const forwardPayload = beginCell()
       .storeUint(0b000, 3) // Deposit constructor prefix
       .storeUint(args.reserve_id_6, 6)
+      .storeUint(args.system_version, 14)
       .endCell();
 
     return JettonWallet.transferMessage(
@@ -81,6 +87,7 @@ export class JettonWallet implements Contract {
     const forwardPayload = beginCell()
       .storeUint(0b001, 3) // Repay constructor prefix
       .storeUint(args.reserve_id_6, 6)
+      .storeUint(args.system_version, 14)
       .endCell();
 
     return JettonWallet.transferMessage(
@@ -102,6 +109,44 @@ export class JettonWallet implements Contract {
       value: args.gas,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
       body: JettonWallet.createSendRepayBody(args),
+    });
+  }
+
+  static createSendLiquidateBody(args: SendLiquidateArgs) {
+    const forwardPayload = beginCell()
+      .storeUint(0b010, 3) // Liquidate constructor prefix
+      .storeUint(args.forward_payload.debt_reserve_id, 6)
+      .storeUint(args.forward_payload.system_version ?? 1, 14) // system version
+      .storeAddress(args.forward_payload.liquidation_target_wallet_address)
+      .storeUint(args.forward_payload.collateral_reserve_id, 6)
+      .storeRef(
+        beginCell()
+          .storeRef(args.forward_payload.redstoneData)
+          .storeRef(args.forward_payload.configPayload)
+          .storeRef(args.forward_payload.configSignature)
+          .endCell(),
+      )
+      .endCell();
+
+    return JettonWallet.transferMessage(
+      args.jetton_amount,
+      args.to,
+      args.response_address,
+      null,
+      args.forward_ton_amount,
+      forwardPayload,
+    );
+  }
+
+  async sendLiquidate(
+    provider: ContractProvider,
+    via: Sender,
+    args: WithGas<SendLiquidateArgs>,
+  ) {
+    return provider.internal(via, {
+      value: args.gas,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+      body: JettonWallet.createSendLiquidateBody(args),
     });
   }
 }
