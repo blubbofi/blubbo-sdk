@@ -55,7 +55,7 @@ export class Events {
   public static unpack = {
     liquidation: Events.liquidation,
     nonLiquidation: Events.nonLiquidation,
-  }
+  };
 
   private static nonLiquidation(body: Cell): NonLiquidationEvent {
     const slice = body.asSlice();
@@ -64,7 +64,7 @@ export class Events {
 
     const common = slice.loadRef();
     const common_slice = common.asSlice();
-    
+
     const headers = common_slice.loadRef();
     const headers_slice = headers.asSlice();
     const system_version = headers_slice.loadUintBig(14);
@@ -109,7 +109,7 @@ export class Events {
       face_amount,
     };
   }
-  
+
   private static liquidation(body: Cell): LiquidationEvent {
     const slice = body.asSlice();
 
@@ -121,9 +121,12 @@ export class Events {
 
     const common = slice.loadRef();
     const common_slice = common.asSlice();
-    const system_version = common_slice.loadUintBig(14);
-    const blubbo_user_version = common_slice.loadUintBig(14);
-    const debt_reserve_id = common_slice.loadUintBig(6);
+
+    const headers = common_slice.loadRef();
+    const headers_slice = headers.asSlice();
+    const system_version = headers_slice.loadUintBig(14);
+    const blubbo_user_version = headers_slice.loadUintBig(14);
+    const debt_reserve_id = headers_slice.loadUintBig(6);
 
     const accumulators = common_slice.loadRef();
     const accumulators_slice = accumulators.asSlice();
@@ -167,7 +170,7 @@ export class Events {
       borrowing_rate,
       total_raw_available,
       total_raw_debt,
-      
+
       liquidator_wallet_address,
       liquidated_wallet_address,
       raw_repayment_amount,
@@ -175,7 +178,7 @@ export class Events {
 
       captured_collateral_reserve_id,
       raw_captured_collateral_amount,
-      face_captured_collateral_amount
+      face_captured_collateral_amount,
     };
   }
 }
@@ -191,133 +194,133 @@ export class EventPacker {
   static LIQUIDATION = 4n;
 
   static nonLiquidation({
-      op,
-      system_version,
-      blubbo_user_version,
-      reserve_id,
-      last_update_timestamp,
-      lending_accumulator,
-      debt_accumulator,
-      total_raw_amount_to_treasury,
-      lending_rate,
-      borrowing_rate,
-      total_raw_available,
-      total_raw_debt,
-      message_origin_wallet_address,
-      raw_amount,
-      face_amount,
+    op,
+    system_version,
+    blubbo_user_version,
+    reserve_id,
+    last_update_timestamp,
+    lending_accumulator,
+    debt_accumulator,
+    total_raw_amount_to_treasury,
+    lending_rate,
+    borrowing_rate,
+    total_raw_available,
+    total_raw_debt,
+    message_origin_wallet_address,
+    raw_amount,
+    face_amount,
   }: NonLiquidationEvent) {
-      return beginCell()
-          .storeUint(op, 6)
+    return beginCell()
+      .storeUint(op, 6)
+      .storeRef(
+        beginCell()
           .storeRef(
-              beginCell()
-                  .storeRef(
-                      beginCell()
-                          .storeUint(system_version, 14)
-                          .storeUint(blubbo_user_version, 14)
-                          .storeUint(reserve_id, 6)
-                          .endCell(),
-                  )
-                  .storeRef(
-                      beginCell()
-                          .storeUint(last_update_timestamp, 64)
-                          .storeUint(lending_accumulator, 105)
-                          .storeUint(debt_accumulator, 105)
-                          .storeUint(total_raw_amount_to_treasury, 256)
-                          .endCell(),
-                  )
-                  .storeRef(
-                      beginCell()
-                          .storeUint(lending_rate, 128)
-                          .storeUint(borrowing_rate, 128)
-                          .storeUint(total_raw_available, 256)
-                          .storeUint(total_raw_debt, 256)
-                          .endCell(),
-                  )
-                  .endCell(),
+            beginCell()
+              .storeUint(system_version, 14)
+              .storeUint(blubbo_user_version, 14)
+              .storeUint(reserve_id, 6)
+              .endCell(),
           )
           .storeRef(
-              beginCell()
-                  .storeAddress(message_origin_wallet_address)
-                  .storeCoins(raw_amount)
-                  .storeCoins(face_amount)
-                  .endCell(),
+            beginCell()
+              .storeUint(last_update_timestamp, 64)
+              .storeUint(lending_accumulator, 105)
+              .storeUint(debt_accumulator, 105)
+              .storeUint(total_raw_amount_to_treasury, 256)
+              .endCell(),
           )
-          .storeRef(beginCell().endCell())
-          .endCell();
+          .storeRef(
+            beginCell()
+              .storeUint(lending_rate, 128)
+              .storeUint(borrowing_rate, 128)
+              .storeUint(total_raw_available, 256)
+              .storeUint(total_raw_debt, 256)
+              .endCell(),
+          )
+          .endCell(),
+      )
+      .storeRef(
+        beginCell()
+          .storeAddress(message_origin_wallet_address)
+          .storeCoins(raw_amount)
+          .storeCoins(face_amount)
+          .endCell(),
+      )
+      .storeRef(beginCell().endCell())
+      .endCell();
   }
 
   static liquidation({
-      system_version,
-      blubbo_user_version,
-      debt_reserve_id,
-      last_update_timestamp,
-      lending_accumulator,
-      debt_accumulator,
-      total_raw_amount_to_treasury,
-      lending_rate,
-      borrowing_rate,
-      total_raw_available,
-      total_raw_debt,
+    system_version,
+    blubbo_user_version,
+    debt_reserve_id,
+    last_update_timestamp,
+    lending_accumulator,
+    debt_accumulator,
+    total_raw_amount_to_treasury,
+    lending_rate,
+    borrowing_rate,
+    total_raw_available,
+    total_raw_debt,
 
-      liquidator_wallet_address,
-      liquidated_wallet_address,
-      raw_repayment_amount,
-      face_repayment_amount,
-      captured_collateral_reserve_id,
-      raw_captured_collateral_amount,
-      face_captured_collateral_amount,
+    liquidator_wallet_address,
+    liquidated_wallet_address,
+    raw_repayment_amount,
+    face_repayment_amount,
+    captured_collateral_reserve_id,
+    raw_captured_collateral_amount,
+    face_captured_collateral_amount,
   }: LiquidationEvent) {
-      return beginCell()
-          .storeUint(EventPacker.LIQUIDATION, 6)
+    return beginCell()
+      .storeUint(EventPacker.LIQUIDATION, 6)
+      .storeRef(
+        beginCell()
           .storeRef(
-              beginCell()
-                  .storeRef(
-                      beginCell()
-                          .storeUint(system_version, 14)
-                          .storeUint(blubbo_user_version, 14)
-                          .storeUint(debt_reserve_id, 6)
-                          .endCell(),
-                  )
-                  .storeRef(
-                      beginCell()
-                          .storeUint(last_update_timestamp, 64)
-                          .storeUint(lending_accumulator, 105)
-                          .storeUint(debt_accumulator, 105)
-                          .storeUint(total_raw_amount_to_treasury, 256)
-                          .endCell(),
-                  )
-                  .storeRef(
-                      beginCell()
-                          .storeUint(lending_rate, 128)
-                          .storeUint(borrowing_rate, 128)
-                          .storeUint(total_raw_available, 256)
-                          .storeUint(total_raw_debt, 256)
-                          .endCell(),
-                  )
-                  .endCell(),
+            beginCell()
+              .storeUint(system_version, 14)
+              .storeUint(blubbo_user_version, 14)
+              .storeUint(debt_reserve_id, 6)
+              .endCell(),
           )
           .storeRef(
-              beginCell()
-                  .storeRef(
-                      beginCell()
-                          .storeAddress(liquidator_wallet_address)
-                          .storeAddress(liquidated_wallet_address)
-                          .storeCoins(raw_repayment_amount)
-                          .storeCoins(face_repayment_amount)
-                          .endCell(),
-                  )
-                  .storeRef(
-                      beginCell()
-                          .storeUint(captured_collateral_reserve_id, 6)
-                          .storeCoins(raw_captured_collateral_amount)
-                          .storeCoins(face_captured_collateral_amount)
-                          .endCell(),
-                  )
-                  .storeRef(beginCell().endCell())
-                  .endCell(),
+            beginCell()
+              .storeUint(last_update_timestamp, 64)
+              .storeUint(lending_accumulator, 105)
+              .storeUint(debt_accumulator, 105)
+              .storeUint(total_raw_amount_to_treasury, 256)
+              .endCell(),
+          )
+          .storeRef(
+            beginCell()
+              .storeUint(lending_rate, 128)
+              .storeUint(borrowing_rate, 128)
+              .storeUint(total_raw_available, 256)
+              .storeUint(total_raw_debt, 256)
+              .endCell(),
+          )
+          .endCell(),
+      )
+      .storeRef(
+        beginCell()
+          .storeRef(
+            beginCell()
+              .storeAddress(liquidator_wallet_address)
+              .storeAddress(liquidated_wallet_address)
+              .storeCoins(raw_repayment_amount)
+              .storeCoins(face_repayment_amount)
+              .endCell(),
+          )
+          .storeRef(
+            beginCell()
+              .storeUint(captured_collateral_reserve_id, 6)
+              .storeCoins(raw_captured_collateral_amount)
+              .storeCoins(face_captured_collateral_amount)
+              .endCell(),
           )
           .storeRef(beginCell().endCell())
-          .endCell();
+          .endCell(),
+      )
+      .storeRef(beginCell().endCell())
+      .endCell();
   }
 }
