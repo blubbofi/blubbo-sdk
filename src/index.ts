@@ -14,3 +14,4 @@ export * from "./oracle/redstone";
 export * from "./jetton";
 export * from "./owner_upgradable";
 export * from "./ton_client_with_fallbacks";
+export * from "./events";
